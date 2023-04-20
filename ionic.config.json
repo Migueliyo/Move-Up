@@ -1,0 +1,7 @@
+{
+  "name": "MoveUp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
