@@ -1,11 +1,11 @@
 title: "Move Up"
 author: [Miguel Angel Colmenero Palacios]
 date: "Junio 2023"
-keywords: [ionic, proyecto, ciclo, programación]
+keywords: [ionic, javascript, firestore, react]
 lang: "es"
 titlepage: true,
 titlepage-text-color: "FFFFFF"
 titlepage-rule-color: "360049"
 titlepage-rule-height: 0
-titlepage-background: "background/background.pdf"
+titlepage-background: "media/background.pdf"
 toc: false
