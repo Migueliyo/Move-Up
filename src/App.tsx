@@ -2,18 +2,17 @@ import { Redirect, Route } from 'react-router-dom';
 import {
   IonApp,
   IonIcon,
-  IonLabel,
   IonRouterOutlet,
   IonTabBar,
   IonTabButton,
   IonTabs,
-  setupIonicReact
+  setupIonicReact,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { addCircleOutline, barbellOutline, homeOutline, personCircleOutline, searchOutline } from 'ionicons/icons';
+import { bagOutline, barbellOutline, home, playCircleOutline, searchOutline } from 'ionicons/icons';
 import Home from './pages/Home';
-import Explorer from './pages/Explorer';
-import Profile from './pages/Profile';
+import Tab2 from './pages/Tab2';
+import Tab3 from './pages/Tab3';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -33,31 +32,38 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import New from './pages/New';
-import Challenge from './pages/Challenge';
+import { ProfileStore } from './pages/ProfileStore';
+import Profile from './pages/Profile';
+import MyProfile from './pages/MyProfile';
 
 
 setupIonicReact();
 
-const App: React.FC = () => (
-  <IonApp>
+const App: React.FC = () => {
+  
+  const profile = ProfileStore.useState((s: { profile: any; }) => s.profile);
+  
+  return (
+    <IonApp>
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
           <Route exact path="/home">
             <Home />
           </Route>
-          <Route exact path="/explorer">
-            <Explorer />
+
+          <Route exact path="/myprofile">
+            <MyProfile />
           </Route>
-          <Route path="/new">
-            <New />
-          </Route>
-          <Route path="/challenge">
-            <Challenge />
-          </Route>
-          <Route path="/profile">
+
+          <Route exact path="/profile/:id">
             <Profile />
+          </Route>
+          <Route exact path="/tab2">
+            <Tab2 />
+          </Route>
+          <Route path="/tab3">
+            <Tab3 />
           </Route>
           <Route exact path="/">
             <Redirect to="/home" />
@@ -65,28 +71,27 @@ const App: React.FC = () => (
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
           <IonTabButton tab="home" href="/home">
-            <IonIcon aria-hidden="true" icon={homeOutline} />
-            <IonLabel>Inicio</IonLabel>
+            <IonIcon icon={home} />
           </IonTabButton>
-          <IonTabButton tab="explorer" href="/explorer">
-            <IonIcon aria-hidden="true" icon={searchOutline} />
-            <IonLabel>Explorar</IonLabel>
+          <IonTabButton tab="tab2" href="/tab2">
+            <IonIcon icon={searchOutline} />
           </IonTabButton>
-          <IonTabButton tab="new" href="/new">
-            <IonIcon aria-hidden="true" icon={addCircleOutline} />
+          <IonTabButton tab="tab3" href="/tab3">
+            <IonIcon icon={playCircleOutline} />
           </IonTabButton>
-          <IonTabButton tab="challenge" href="/challenge">
-            <IonIcon aria-hidden="true" icon={barbellOutline} />
-            <IonLabel>Desafíos</IonLabel>
+
+          <IonTabButton tab="tab4" href="/tab3">
+            <IonIcon icon={bagOutline} />
           </IonTabButton>
-          <IonTabButton tab="profile" href="/profile">
-            <IonIcon aria-hidden="true" icon={personCircleOutline} />
-            <IonLabel>Perfil</IonLabel>
+
+          <IonTabButton tab="tab5" href="/myprofile">
+            <img alt="tab avatar" src={ profile.avatar } />
           </IonTabButton>
         </IonTabBar>
       </IonTabs>
     </IonReactRouter>
   </IonApp>
-);
+  );
+};
 
 export default App;
