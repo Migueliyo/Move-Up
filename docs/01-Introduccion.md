@@ -6,7 +6,7 @@
 |Miguel Angel      |Colmenero Palacios  |MoveUp                  |DAM                 |2023              |IES Virgen del Carmen|
 
 ## Descripción del proyecto
-La idea principal de mi proyecto es desarrollar una aplicación nativa Android con Android Studio en la que se van a desarrollar (o intentar desarrollar) las siguientes ideas:
+La idea principal de mi proyecto es desarrollar una aplicación híbrida con Ionic en la que se van a desarrollar las siguientes ideas:
 
 * La aplicación tratará de ser una red social, con una interfaz parecida a la de TikTok, Instagram BeReal… , en la que puedas agregar amigos, tener tus publicaciones, interactuar con amigos (la idea es la realización de un chat pero como todavía no sé la dificultad que puede llegar a tener esta idea se puede eliminar en un futuro), etc. La diferencia de mi aplicación en cuanto a las demás es que ésta estará enfocada a la realización de ejercicio físico. 
 * Se presentarán desafíos dentro de la aplicación que se deben realizar compartiendo un video de que se han realizado (por ejemplo se presenta un desafío de hacer 50 flexiones en los próximos 10 minutos). Tus amigos o personas externas pueden decidir si el desafío ha sido superado o no.

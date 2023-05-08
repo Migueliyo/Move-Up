@@ -58,7 +58,7 @@ export const ProfilesStore = new Store({
             title: "Head of Product Marketing",
             bio: "I help web developers build cross-platform Web Native apps. @IonicFramework: Head of Product Marketing",
             link: "webnative.tech",
-            avatar: "",
+            avatar: "/assets/alan.jpg",
             followers: "1,200",
             following: "900",
             posts: [
@@ -88,7 +88,7 @@ export const ProfilesStore = new Store({
             title: "Senior Dev Rel",
             bio: "Google Developer Expert. Mediocre at best. he/him. npx mhartington",
             link: "mhartington.io",
-            avatar: "",
+            avatar: "/assets/alan.jpg",
             followers: "12.3K",
             following: "2,200",
             posts: [

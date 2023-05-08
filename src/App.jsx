@@ -9,10 +9,13 @@ import {
   setupIonicReact,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { bagOutline, barbellOutline, home, playCircleOutline, searchOutline } from 'ionicons/icons';
+import { barbellOutline, home, playCircleOutline, searchOutline } from 'ionicons/icons';
+import { ProfileStore } from './pages/ProfileStore';
+import Profile from './pages/Profile';
+import MyProfile from './pages/MyProfile';
 import Home from './pages/Home';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
+import Search from './pages/Search';
+import Challenge from './pages/Challenge';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -32,16 +35,14 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
-import { ProfileStore } from './pages/ProfileStore';
-import Profile from './pages/Profile';
-import MyProfile from './pages/MyProfile';
+import NewContent from './pages/NewContent';
 
 
 setupIonicReact();
 
-const App: React.FC = () => {
+const App = () => {
   
-  const profile = ProfileStore.useState((s: { profile: any; }) => s.profile);
+  const profile = ProfileStore.useState(s => s.profile);
   
   return (
     <IonApp>
@@ -51,19 +52,20 @@ const App: React.FC = () => {
           <Route exact path="/home">
             <Home />
           </Route>
-
           <Route exact path="/myprofile">
             <MyProfile />
           </Route>
-
           <Route exact path="/profile/:id">
             <Profile />
           </Route>
-          <Route exact path="/tab2">
-            <Tab2 />
+          <Route exact path="/explore">
+            <Search />
           </Route>
-          <Route path="/tab3">
-            <Tab3 />
+          <Route exact path="/new">
+            <NewContent />
+          </Route>
+          <Route path="/challenge">
+            <Challenge />
           </Route>
           <Route exact path="/">
             <Redirect to="/home" />
@@ -73,18 +75,16 @@ const App: React.FC = () => {
           <IonTabButton tab="home" href="/home">
             <IonIcon icon={home} />
           </IonTabButton>
-          <IonTabButton tab="tab2" href="/tab2">
+          <IonTabButton tab="explore" href="/explore">
             <IonIcon icon={searchOutline} />
           </IonTabButton>
-          <IonTabButton tab="tab3" href="/tab3">
+          <IonTabButton tab="new" href="/new">
             <IonIcon icon={playCircleOutline} />
           </IonTabButton>
-
-          <IonTabButton tab="tab4" href="/tab3">
-            <IonIcon icon={bagOutline} />
+          <IonTabButton tab="challenge" href="/challenge">
+            <IonIcon icon={barbellOutline} />
           </IonTabButton>
-
-          <IonTabButton tab="tab5" href="/myprofile">
+          <IonTabButton tab="myprofile" href="/myprofile">
             <img alt="tab avatar" src={ profile.avatar } />
           </IonTabButton>
         </IonTabBar>

@@ -6,7 +6,7 @@ export const PostStore = new Store({
 
         {
             id: 1,
-            image: "",
+            image: "https://creativetacos.com/wp-content/uploads/2019/08/Free-Chipper-Personal-Finance-App-Kit.jpg",
             caption: "Ioniconf 2021! Register Now!",
             likes: 73,
             liked: false,
