@@ -43,7 +43,7 @@ export const ProfilesStore = new Store({
             title: "CDO Ionic",
             bio: "Co-founder / CDO @ionicframework. Creator of @ionicons. Product designer. Pixel junkie. Forest explorer.",
             link: "bensperry.com",
-            avatar: "/assets/alan.jpg",
+            avatar: "https://firebasestorage.googleapis.com/v0/b/moveup-2ba70.appspot.com/o/avatar.png?alt=media&token=c8c33971-f8fd-46bf-9796-bafe948d3905",
             followers: "800",
             following: "700",
             posts: [
