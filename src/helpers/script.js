@@ -62,8 +62,6 @@ for (let i = 0; i < 50; i++) {
   ids.push(combination);
 }
 
-//Definiendo la colección
-
 // Método para añadir usuarios
 const addUsers = async (users) => {
   try {
