@@ -2,6 +2,7 @@ import { initializeApp } from "firebase/app";
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { deleteDoc, doc, getDoc, getFirestore } from "firebase/firestore";
 import { collection, getDocs, addDoc } from "firebase/firestore";
+import { FirebaseResponse } from "../model/response";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -21,55 +22,65 @@ const firebaseConfig = {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+  const auth = getAuth(app);
   const USERS_COLLECTION = "usuarios";
 
 
-// const login = async (email, password) => {
-//     try {
-//         const userCredential = await signInWithEmailAndPassword(auth, email, password);
-//         const user = userCredential.user;
-//         return {
-//             data: user,
-//             error: false
-//         }
-//     } catch (e) {
-//         console.log(e);
-//         return {
-//             data: null,
-//             error: true
-//         }
-//     }
-// }
+const login = async (email: string, password: string): Promise<FirebaseResponse> => {
+    try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        return {
+            data: user,
+            error: false
+        }
+    } catch (e) {
+        console.log(e);
+        return {
+            data: null,
+            error: true
+        }
+    }
+}
 
-// const register = async (email, password) => {
-//     try {
-//         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
-//         const user = userCredential.user;
-//         return {
-//             data: user,
-//             error: false
-//         }
-//     } catch (e) {
-//         console.log(e);
-//         return {
-//             data: null,
-//             error: true
-//         }
-//     }
-// }
+const register = async (email: string, password: string): Promise<FirebaseResponse> => {
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+        const user = userCredential.user;
+        return {
+            data: user,
+            error: false
+        }
+    } catch (e) {
+        console.log(e);
+        return {
+            data: null,
+            error: true
+        }
+    }
+}
 
-// const logOut = async () => {
-//     await signOut(auth);
-// }
+const logOut = async () => {
+    await signOut(auth);
+}
 
-const getUsers = async () => {
+
+const getUsers = async (): Promise<FirebaseResponse> => {
     try {
         const usersCol = collection(db, USERS_COLLECTION);
         const snapshot = await getDocs(usersCol);
         const usersList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        return usersList;
+        return {
+            data: usersList,
+            error: false
+        }
     } catch (e) {
         console.log(e);
+        return {
+            data: null,
+            error: true
+        }
+
     }
 }
 

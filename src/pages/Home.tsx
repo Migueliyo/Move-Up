@@ -1,13 +1,33 @@
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonToolbar } from '@ionic/react';
 import { addCircleOutline, heartOutline, paperPlaneOutline } from 'ionicons/icons';
+import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router';
 import Feed from '../components/Feed';
 import Stories from '../components/Stories';
 import { PostStore } from './PostStore';
-import { ProfilesStore } from './ProfilesStore';
+import { FirebaseResponse } from '../model/response';
+import firebase from '../firebase/firebase';
 
 const Home = () => {
 
-	const profiles = ProfilesStore.useState(s => s.profiles);
+	const [users, setUsers] = useState([]);
+    const location = useLocation();
+
+    const getCurses = async () => {
+        const response: FirebaseResponse = await firebase.getUsers();
+        if (!response.error) {
+            setUsers(response.data);
+        } else {
+            console.log(response.error);
+        }
+    }
+
+    useEffect(
+        () => {
+            getCurses()
+        }, [location.key]
+    )
+
 	const posts = PostStore.useState(s => s.posts);
 
 	return (
@@ -34,7 +54,7 @@ const Home = () => {
 			</IonHeader>
 
 			<IonContent fullscreen>
-				<Stories profiles={ profiles } />
+				<Stories users={ users } />
 				<Feed posts={ posts } />
 			</IonContent>
 		</IonPage>

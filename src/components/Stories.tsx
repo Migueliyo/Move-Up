@@ -1,16 +1,16 @@
 import { IonCol, IonRouterLink, IonRow } from "@ionic/react";
 import styles from "./Stories.module.scss";
 
-const Stories = props => {
+const Stories = (props: { users: any; }) => {
 
-    const { profiles } = props;
+    const { users: profiles } = props;
 
     return (
 
         <IonRow className={ styles.stories }>
 
             <div className={ styles.storiesContainer }>
-                { profiles.map((story, index) => {
+                { profiles.map((story:any, index:any) => {
 
                     return (
                         <IonCol key={ index } className={ index === 0 ? styles.yourStory : styles.story }>

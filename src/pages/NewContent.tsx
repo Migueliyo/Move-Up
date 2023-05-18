@@ -1,25 +1,25 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
-import './Search.css';
+import './NewContent.css';
 
-const Search = () => {
+const NewContent : React.FC = () => {
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Explorar</IonTitle>
+          <IonTitle>Publicar contenido</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Explorar</IonTitle>
+            <IonTitle size="large">Publicar contenido</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <ExploreContainer name="Explorar" />
+        <ExploreContainer />
       </IonContent>
     </IonPage>
   );
 };
 
-export default Search;
+export default NewContent;

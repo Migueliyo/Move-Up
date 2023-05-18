@@ -1,25 +1,26 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
-import './NewContent.css';
+import './Challenge.css';
 
-const NewContent = () => {
+const Challenge= () => {
+  
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Publicar contenido</IonTitle>
+          <IonTitle>Desafíos</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonHeader collapse="condense">
           <IonToolbar>
-            <IonTitle size="large">Publicar contenido</IonTitle>
+            <IonTitle size="large">Desafíos</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <ExploreContainer name="Publicar contenido" />
+        <ExploreContainer />
       </IonContent>
     </IonPage>
   );
 };
 
-export default NewContent;
+export default Challenge;

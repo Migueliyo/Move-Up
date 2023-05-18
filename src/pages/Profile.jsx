@@ -12,7 +12,7 @@ const Profile = () => {
     const params = useParams();
     const profiles = ProfilesStore.useState(s => s.profiles);
     const currentProfile = ProfileStore.useState(s => s.profile);
-    const [ profile, setProfile ] = useState(false);
+    const [ profile, setProfile ] = useState();
 
     useIonViewWillEnter(() => {
 
