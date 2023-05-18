@@ -143,4 +143,4 @@ for (let i = 0; i < avatar_men.length; i++) {
 
 Para finalizar, tan solo había que ejecutar dicho script con nodejs y esperar a que todos los datos se introdujeran correctamente en la base de datos:
 
-![Captura de la ejecución del script](/docs/media/)
+![Captura de la ejecución del script](/docs/media/script.png)

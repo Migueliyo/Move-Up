@@ -29,9 +29,9 @@ $border: linear-gradient(to bottom, #d82b7e, #f57939);
     justify-content: center;
     align-items: center;
     align-content: center;
-    margin: 0 auto;
+
     width: 4rem !important;
-    margin-left: 1rem;
+    margin-left: 0.8rem;
 }
 
 .story:first-child,
@@ -50,7 +50,7 @@ $border: linear-gradient(to bottom, #d82b7e, #f57939);
     color: rgb(95, 95, 95);
     font-size: 0.7rem;
     font-weight: 400;
-    width: 120%;
+    width: 4rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -61,12 +61,14 @@ $border: linear-gradient(to bottom, #d82b7e, #f57939);
 .story img,
 .yourStory img {
 
-    height: 3.5rem !important;
-    width: 3.5rem !important;
+    height: 4rem !important;
+    width: 4rem !important;
     position: absolute;
     border-radius: 500px;
     background: $border;
     padding: 0.1rem;
+    object-fit: cover;
+    object-position: center center;
 }
 
 .yourStory img {

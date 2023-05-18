@@ -22,7 +22,7 @@ const Feed = props => {
         <div className={ styles.postsContainer }>
             { posts.map((post, index) => {
 
-                const postProfile = profiles.filter(p => p.id === post.profile_id)[0];
+                const postProfile = 2;
 
                 return (
 
