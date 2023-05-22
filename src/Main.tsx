@@ -1,51 +1,21 @@
-import { Redirect, Route } from 'react-router-dom';
-import {
-  IonApp,
-  IonIcon,
-  IonRouterOutlet,
-  IonTabBar,
-  IonTabButton,
-  IonTabs,
-  setupIonicReact,
-} from '@ionic/react';
+import { IonApp, IonIcon, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { barbellOutline, home, playCircleOutline, searchOutline } from 'ionicons/icons';
-import { ProfileStore } from './pages/ProfileStore';
-import Profile from './pages/Profile';
-import MyProfile from './pages/MyProfile';
+import { Redirect, Route } from 'react-router-dom';
 import Home from './pages/Home';
+import MyProfile from './pages/MyProfile';
+import Profile from './pages/Profile';
 import Search from './pages/Search';
-import Challenge from './pages/Challenge';
-
-/* Core CSS required for Ionic components to work properly */
-import '@ionic/react/css/core.css';
-
-/* Basic CSS for apps built with Ionic */
-import '@ionic/react/css/normalize.css';
-import '@ionic/react/css/structure.css';
-import '@ionic/react/css/typography.css';
-
-/* Optional CSS utils that can be commented out */
-import '@ionic/react/css/padding.css';
-import '@ionic/react/css/float-elements.css';
-import '@ionic/react/css/text-alignment.css';
-import '@ionic/react/css/text-transformation.css';
-import '@ionic/react/css/flex-utils.css';
-import '@ionic/react/css/display.css';
-
-/* Theme variables */
-import './theme/variables.css';
 import NewContent from './pages/NewContent';
+import Challenge from './pages/Challenge';
+import { barbellOutline, home, playCircleOutline, searchOutline } from 'ionicons/icons';
+import { useAuth } from './auth/AuthProvider';
 
-
-setupIonicReact();
-
-const App = () => {
+const Main: React.FC = () => {
   
-  const profile = ProfileStore.useState(s => s.profile);
-  
+  const { user } = useAuth();
+
   return (
-    <IonApp>
+  <IonApp>
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
@@ -85,7 +55,7 @@ const App = () => {
             <IonIcon icon={barbellOutline} />
           </IonTabButton>
           <IonTabButton tab="myprofile" href="/myprofile">
-            <img alt="tab avatar" src={ profile.avatar } />
+          {user && <img alt="tab avatar" src={user.avatar} />}
           </IonTabButton>
         </IonTabBar>
       </IonTabs>
@@ -94,4 +64,9 @@ const App = () => {
   );
 };
 
-export default App;
+export default Main;
+
+
+
+
+

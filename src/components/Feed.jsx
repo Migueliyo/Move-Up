@@ -1,8 +1,7 @@
 
 import { IonAvatar, IonIcon, IonRouterLink } from "@ionic/react";
-import { addCircleOutline, bookmarkOutline, chatbubbleOutline, ellipsisVertical, heart, heartOutline, paperPlaneOutline } from "ionicons/icons";
+import { addCircleOutline, bookmarkOutline, chatbubbleOutline, ellipsisVertical, heart, heartOutline, logOut, paperPlaneOutline } from "ionicons/icons";
 import { likePost } from "../pages/PostStore";
-import { ProfilesStore } from "../pages/ProfilesStore";
 import { ProfileStore } from "../pages/ProfileStore";
 import styles from "./Feed.module.scss";
 
@@ -10,7 +9,6 @@ const Feed = props => {
 
     const { posts } = props;
     const profile = ProfileStore.useState(s => s.profile);
-    const profiles = ProfilesStore.useState(s => s.profiles);
 
     const addLike = (event, postID, liked) => {
         
@@ -22,7 +20,7 @@ const Feed = props => {
         <div className={ styles.postsContainer }>
             { posts.map((post, index) => {
 
-                const postProfile = 2;
+                const postProfile = 2; //...
 
                 return (
 

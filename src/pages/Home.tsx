@@ -1,5 +1,5 @@
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonToolbar } from '@ionic/react';
-import { addCircleOutline, heartOutline, paperPlaneOutline } from 'ionicons/icons';
+import { addCircleOutline, heartOutline, logOutOutline, paperPlaneOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import Feed from '../components/Feed';
@@ -13,7 +13,7 @@ const Home = () => {
 	const [users, setUsers] = useState([]);
     const location = useLocation();
 
-    const getCurses = async () => {
+    const getUsers = async () => {
         const response: FirebaseResponse = await firebase.getUsers();
         if (!response.error) {
             setUsers(response.data);
@@ -24,7 +24,7 @@ const Home = () => {
 
     useEffect(
         () => {
-            getCurses()
+            getUsers()
         }, [location.key]
     )
 
@@ -49,6 +49,11 @@ const Home = () => {
 						<IonButton color="dark">
 							<IonIcon icon={ paperPlaneOutline } />
 						</IonButton>
+
+						<IonButton onClick={firebase.logOut}>
+							<IonIcon icon={logOutOutline} />
+            			</IonButton>
+
 					</IonButtons>
 				</IonToolbar>
 			</IonHeader>
