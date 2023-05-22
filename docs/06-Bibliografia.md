@@ -1,6 +1,6 @@
 # Bibliografía
 
-Apunta aquí cada Web, tutorial, vídeo que veas y qué has aprendido con él:
+Esta parte constará webs, tutoriales, vídeos que he visto y que me han ayudado con el desarrollo de mi proyecto:
 
 * Realización del diagrama de casos de uso: <https://app.diagrams.net/>.
 * Documentación Ionic oficial: <https://ionicframework.com/>

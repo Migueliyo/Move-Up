@@ -1,7 +1,7 @@
 title: "Move Up"
 author: [Miguel Angel Colmenero Palacios]
 date: "Junio 2023"
-keywords: [ionic, javascript, firestore, react]
+keywords: [ionic, typescript, firestore, react]
 lang: "es"
 titlepage: true,
 titlepage-text-color: "FFFFFF"
