@@ -116,7 +116,7 @@ const MyProfile = () => {
 
                         return (
                             <IonCol className={ styles.postCol } key={ index } size="4">
-                                <img alt="post" src="https://images.pexels.com/photos/699122/pexels-photo-699122.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260" />
+                                <img alt="post" src={post.image} />
                             </IonCol>
                         )
                     })}

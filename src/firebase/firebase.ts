@@ -128,7 +128,7 @@ const getUser = async (id: string) => {
     } catch (e) {
         console.log(e);
         return {
-            data: null,
+            data: undefined,
             error: true
         }
     }
