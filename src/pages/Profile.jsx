@@ -1,25 +1,31 @@
 import { IonBackButton, IonButton, IonButtons, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonRow, IonToolbar, useIonViewWillEnter } from '@ionic/react';
 import { addCircleOutline, arrowBackOutline, bookmarksOutline, chevronDown, ellipsisVertical, gridOutline, menuOutline, personOutline } from 'ionicons/icons';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import styles from './Profile.module.scss';
 
-import { ProfilesStore } from './ProfilesStore';
-import { ProfileStore } from './ProfileStore';
+import firebase from '../firebase/firebase';
+import { useAuth } from '../auth/AuthProvider';
 
 const Profile = () => {
 
+    const { user } = useAuth();
+    const [profile, setProfile] = useState({});
     const params = useParams();
-    const profiles = ProfilesStore.useState(s => s.profiles);
-    const currentProfile = ProfileStore.useState(s => s.profile);
-    const [ profile, setProfile ] = useState();
-
-    useIonViewWillEnter(() => {
-
-        const profileID = params.id;
-        const tempProfile = profiles.filter(p => parseInt(p.id) === parseInt(profileID))[0];
-        setProfile(tempProfile);
-    });
+    const [profileID, setProfileID] = useState(params.id);
+    
+    const getUser = async (id) => {
+      const tempProfile = await firebase.getUser(id);
+      setProfile(tempProfile.data);
+    };
+    
+    useEffect(() => {
+        setProfileID(params.id);
+      }, [params.id]);
+      
+      useEffect(() => {
+        getUser(profileID);
+      }, [profileID]);
 
 	return (
 		<IonPage>
@@ -27,7 +33,7 @@ const Profile = () => {
 				<IonToolbar>
 					<IonButtons slot="start">
 
-                        { profile.id === currentProfile.id ?
+                        { profile.id === user.id ?
                             <p className={ styles.username }>
                                 { profile.username }
                                 <IonIcon icon={ chevronDown } />
@@ -43,7 +49,7 @@ const Profile = () => {
 					</IonButtons>
 
 					<IonButtons slot="end">
-						{ profile.id === currentProfile.id ?
+						{ profile.id === user.id ?
                             <>
                                 <IonButton color="dark">
                                     <IonIcon icon={ addCircleOutline } />

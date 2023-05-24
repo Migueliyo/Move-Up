@@ -2,15 +2,16 @@
 import { IonAvatar, IonIcon, IonRouterLink } from "@ionic/react";
 import { addCircleOutline, bookmarkOutline, chatbubbleOutline, ellipsisVertical, heart, heartOutline, logOut, paperPlaneOutline } from "ionicons/icons";
 import { likePost } from "../pages/PostStore";
-import { ProfileStore } from "../pages/ProfileStore";
 import styles from "./Feed.module.scss";
+import { useAuth } from "../auth/AuthProvider";
+import { JSXElementConstructor, Key, MouseEvent, ReactElement, ReactFragment, ReactPortal } from "react";
 
-const Feed = props => {
+const Feed = (props: { posts: any; }) => {
 
     const { posts } = props;
-    const profile = ProfileStore.useState(s => s.profile);
+    const { user } = useAuth();
 
-    const addLike = (event, postID, liked) => {
+    const addLike = (event: any, postID: any, liked: any) => {
         
         likePost(event, postID, liked);
     }
@@ -18,9 +19,7 @@ const Feed = props => {
     return (
 
         <div className={ styles.postsContainer }>
-            { posts.map((post, index) => {
-
-                const postProfile = 2; //...
+            { posts.map((post: { image: any; id: any; liked: any; caption: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | null | undefined; comments: string | any[]; time: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | ReactFragment | ReactPortal | null | undefined; }, index: Key | null | undefined) => {
 
                 return (
 
@@ -28,14 +27,14 @@ const Feed = props => {
                         <div className={ styles.postProfile }>
                             <div className={ styles.postProfileInfo }>
                                 
-                                <IonRouterLink routerLink={ `/profile/${ postProfile.id }`}>
+                                <IonRouterLink routerLink={ `/profile/${user && user.id }`}>
                                     <IonAvatar>
-                                        <img alt="post avatar" src={ postProfile.avatar } />
+                                        <img alt="post avatar" src={ user?.avatar } />
                                     </IonAvatar>
                                 </IonRouterLink>
 
-                                <IonRouterLink routerLink={ `/profile/${ postProfile.id }`}>
-                                    <p>{ postProfile.username }</p>
+                                <IonRouterLink routerLink={ `/profile/${ user && user.id }`}>
+                                    <p>{ user && user.username }</p>
                                 </IonRouterLink>
                             </div>
 
@@ -66,8 +65,8 @@ const Feed = props => {
 
                         <div className={ styles.postCaption }>
                             <p><span className={ styles.postName }>
-                                <IonRouterLink routerLink={ `/profile/${ postProfile.id }`}>
-                                    { postProfile.username }
+                                <IonRouterLink routerLink={ `/profile/${ user && user.id }`}>
+                                    { user && user.username }
                                 </IonRouterLink>
                                 </span> { post.caption }</p>
                         </div>
@@ -79,7 +78,7 @@ const Feed = props => {
                         <div className={ styles.postAddComment }>
                             <div className={ styles.postAddCommentProfile }>
                                 <IonAvatar>
-                                    <img alt="add comment avatar" src={ profile.avatar } />
+                                    <img alt="add comment avatar" src={ user?.avatar } />
                                 </IonAvatar>
                                 <p className="ion-margin-left">Add a comment...</p>
                             </div>

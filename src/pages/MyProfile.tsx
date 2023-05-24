@@ -1,23 +1,22 @@
 import { IonButton, IonButtons, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonRow, IonToolbar, useIonViewWillEnter } from '@ionic/react';
 import { addCircleOutline, bookmarksOutline, chevronDown, gridOutline, menuOutline } from 'ionicons/icons';
-import { useState } from 'react';
 import styles from './Profile.module.scss';
-
-import { ProfilesStore } from './ProfilesStore';
-import { ProfileStore } from './ProfileStore';
+import { useAuth } from '../auth/AuthProvider';
+import { useEffect, useState } from 'react';
+import { User } from '../model/user';
 
 const MyProfile = () => {
 
-    const currentProfile = ProfileStore.useState(s => s.profile);
-    const profiles = ProfilesStore.useState(s => s.profiles);
-    const [ profile, setProfile ] = useState(false);
+    const { user } = useAuth();
+    const [profile, setProfile] = useState<User>();
 
-    useIonViewWillEnter(() => {
+    useEffect(
+        () => {
+            if (user != null)
+                setProfile(user);
+        }, []
+    )
 
-        const profileID = currentProfile.id;
-        const tempProfile = profiles.filter(p => parseInt(p.id) === parseInt(profileID))[0];
-        setProfile(tempProfile);
-    });
 
 	return (
 		<IonPage>
@@ -26,7 +25,7 @@ const MyProfile = () => {
 					<IonButtons slot="start">
 
                         <p className={ styles.username }>
-                            { profile.username }
+                            {profile && profile.username }
                             <IonIcon icon={ chevronDown } />
                         </p>
 					</IonButtons>
@@ -46,28 +45,28 @@ const MyProfile = () => {
                 <IonGrid>
                     <IonRow className="ion-text-center ion-justify-content-between ion-align-self-center ion-align-items-center">
                         <IonCol size="4">
-                            <img src={ profile.avatar } alt="profile avatar" className={ styles.profileAvatar } />
+                            <img src={ profile?.avatar ?? '' } alt="profile avatar" className={ styles.profileAvatar } />
                         </IonCol>
 
                         <IonCol>
                             <IonRow className="ion-text-center ion-justify-content-between ion-align-items-center ion-align-self-center ion-align">
                                 <IonCol size="4" className="ion-text-center">
                                     <IonCardTitle className={ styles.value }>
-                                        { profile.posts && profile.posts.length }
+                                        {profile && profile.posts && profile.posts.length }
                                     </IonCardTitle>
                                     <IonCardSubtitle className={ styles.label }>Posts</IonCardSubtitle>
                                 </IonCol>
 
                                 <IonCol size="4" className="ion-text-center">
                                     <IonCardTitle className={ styles.value }>
-                                        { profile.followers }
+                                        {profile && profile.followers }
                                     </IonCardTitle>
                                     <IonCardSubtitle className={ styles.label }>Followers</IonCardSubtitle>
                                 </IonCol>
 
                                 <IonCol size="4" className="ion-text-center">
                                     <IonCardTitle className={ styles.value }>
-                                        { profile.following }
+                                        {profile && profile.following }
                                     </IonCardTitle>
                                     <IonCardSubtitle className={ styles.label }>Following</IonCardSubtitle>
                                 </IonCol>
@@ -78,10 +77,10 @@ const MyProfile = () => {
                     <IonRow>
                         <IonCol size="12" className={ styles.profileInfo }>
                             
-                            <p className={ styles.profileUsername }>{ profile.firstname } { profile.surname }</p>
-                            <p className={ styles.profileTitle }>{ profile.title }</p>
-                            <p className={ styles.profileBio }>{ profile.bio }</p>
-                            <a className={ styles.profileLink } href={ profile.link }>{ profile.link }</a>
+                            <p className={ styles.profileUsername }>{profile && profile.firstname } {profile && profile.surname }</p>
+                            <p className={ styles.profileTitle }>{profile && profile.title }</p>
+                            <p className={ styles.profileBio }>{profile && profile.bio }</p>
+                            <a className={ styles.profileLink } href={ profile?.link ?? '' }>{ profile?.link ?? '' }</a>
                         </IonCol>
                     </IonRow>                    
                         
@@ -113,7 +112,7 @@ const MyProfile = () => {
                 </IonRow>
 
                 <IonRow className="ion-no-padding ion-no-margin">
-                    { profile.posts && profile.posts.map((post, index) => {
+                    {profile && profile.posts && profile.posts.map((post, index) => {
 
                         return (
                             <IonCol className={ styles.postCol } key={ index } size="4">
