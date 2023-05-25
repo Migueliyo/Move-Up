@@ -1,12 +1,16 @@
-import { IonButton, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonInput, IonItem, IonItemGroup, IonLabel, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
-import { useRef } from 'react';
+import { IonAlert, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonInput, IonItem, IonItemGroup, IonLabel, IonMenuButton, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
+import { useRef, useState } from 'react';
 import firebase from '../firebase/firebase';
 import { Props } from '../model/props';
 
-const Register = ({history} : Props) => {
+import "./InitalPages.css";
+
+const Register = ({ history }: Props) => {
     const refName = useRef<HTMLIonInputElement>();
     const refEmail = useRef<HTMLIonInputElement>();
     const refPassword = useRef<HTMLIonInputElement>();
+
+    const [registerError, setRegisterError] = useState(false);
 
     const onRegister = async () => {
         const name = refName.current?.value as string;
@@ -15,52 +19,66 @@ const Register = ({history} : Props) => {
         const response = await firebase.register(email, password);
         if (!response.error) {
             history.push('/');
+        } else {
+            setRegisterError(true);
         }
     }
 
     return (
         <IonPage>
-            <IonHeader>
-                <IonToolbar>
-                    <IonButtons slot="start">
-                        <IonMenuButton />
-                    </IonButtons>
-                    <IonTitle>Registrar usuario</IonTitle>
-                </IonToolbar>
-            </IonHeader>
-
             <IonContent fullscreen>
+                <IonCard className="ion-card">
+                    <img
+                        className="ion-image"
+                        src="public\assets\icon\favicon.png"
+                        alt="login"
+                    ></img>
 
-                <IonHeader collapse="condense">
-                    <IonToolbar>
-                        <IonTitle size="large">Registrar usuario</IonTitle>
-                    </IonToolbar>
-                </IonHeader>
-                <IonGrid fixed={true}>
-                    <IonRow>
-                        <IonCol>
-                            <IonItemGroup>
-                                <IonItem>
-                                    <IonLabel>
-                                        <IonInput ref={refName as any} placeholder='Nombre y apellidos' />
-                                    </IonLabel>
-                                </IonItem>
-                                <IonItem>
-                                    <IonLabel>
-                                        <IonInput ref={refEmail as any} type='email' placeholder='email' />
-                                    </IonLabel>
-                                </IonItem>
-                                <IonItem>
-                                    <IonLabel>
-                                        <IonInput ref={refPassword as any} type='password' placeholder='password' />
-                                    </IonLabel>
-                                </IonItem>
-                            </IonItemGroup>
-                            <IonButton expand='block' onClick={onRegister}>Registrar</IonButton>
-                            <IonButton expand='block' routerLink='/login'>Ir a Inicio Sesión</IonButton>
-                        </IonCol>
-                    </IonRow>
-                </IonGrid>
+                    <IonCardHeader>
+                        <IonCardTitle className="ion-label">Registrarse</IonCardTitle>
+                    </IonCardHeader>
+                    <IonCardContent>
+                        <IonInput
+                            className="ion-input"
+                            ref={refName as any}
+                            type="text"
+                            placeholder="Email"
+                            label="Introduce tu nombre de usuario *"
+                            labelPlacement="floating"
+                            fill="solid"
+                        ></IonInput>
+                        <IonInput
+                            className="ion-input"
+                            ref={refEmail as any}
+                            label="Introduce tu email *"
+                            type="email"
+                            labelPlacement="floating"
+                            fill="solid"
+                            placeholder="Contraseña"
+                        ></IonInput>
+                        <IonInput
+                            className="ion-input"
+                            ref={refPassword as any}
+                            label="Introduce tu contraseña *"
+                            type="password"
+                            labelPlacement="floating"
+                            fill="solid"
+                            placeholder="Contraseña"
+                        ></IonInput>
+                        <IonAlert
+                            isOpen={registerError}
+                            header="Alerta"
+                            subHeader="Fallo en el registro de sesión"
+                            message="El email o nombre de usuario ya están siendo utilizados"
+                            buttons={["OK"]}
+                            onDidDismiss={() => setRegisterError(false)}
+                        ></IonAlert>
+                        <IonButton expand="block" onClick={onRegister}>
+                            Registrarse
+                        </IonButton>
+                        <div className="a-href"><a href="/login">Volver a inicio de sesión</a></div>
+                    </IonCardContent>
+                </IonCard>
             </IonContent>
         </IonPage >
     );

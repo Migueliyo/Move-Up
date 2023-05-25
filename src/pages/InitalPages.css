@@ -1,0 +1,36 @@
+.ion-card{
+    margin-top: 12rem;
+}
+
+.ion-input{
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+.ion-image{
+    width: 80px;
+    height: 80px;
+    background-color: #0B051F;
+    border-radius: 20px;
+    padding: 0.5%;
+    display: block;
+    margin: auto;
+    margin-top: 5%;
+}
+
+.ion-label{
+    font-size: xx-large;
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.ion-checkbox{
+    margin-bottom: 7%;
+}
+
+.a-href{
+    margin-top: 2%;
+    text-align: right;
+}
