@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonInput, IonItem, IonItemGroup, IonLabel, IonMenuButton, IonPage, IonRow, IonText, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonButtons, IonCol, IonContent, IonGrid, IonHeader, IonInput, IonItem, IonItemGroup, IonLabel, IonMenuButton, IonPage, IonRow, IonText, IonTitle, IonToolbar } from '@ionic/react';
 import { useRef, useState } from 'react';
 import firebase from '../firebase/firebase';
 import { Props } from '../model/props';
@@ -47,21 +47,23 @@ const Login = ({ history }: Props) => {
                         <IonCol>
                             <IonItemGroup>
                                 <IonItem>
-                                    <IonLabel>
-                                        <IonInput ref={refEmail as any} onIonChange={resetError} type='email' placeholder='Email' />
-                                    </IonLabel>
+                                    <IonInput ref={refEmail as any} onIonChange={resetError} type='email' placeholder='Email' label="Outline input" labelPlacement="floating" fill="outline"></IonInput>
                                 </IonItem>
                                 <IonItem>
-                                    <IonLabel>
-                                        <IonInput ref={refPassword as any} onIonChange={resetError} type='password' placeholder='Contraseña' />
-                                    </IonLabel>
+                                    <IonInput ref={refPassword as any} onIonChange={resetError} label="Outline input" type='password' labelPlacement="floating" fill="outline" placeholder='Contraseña'></IonInput>
                                 </IonItem>
                             </IonItemGroup>
                             {
                                 loginError && (
-                                    <div>
-                                        <IonText color="danger">Email o contraseña incorrecta</IonText>
-                                    </div>
+                                    <IonAlert
+                                        isOpen={loginError}
+                                        trigger="present-alert"
+                                        header="Alerta"
+                                        subHeader="Fallo al iniciar sesión"
+                                        message="Email o contraseña incorrectos"
+                                        buttons={['OK']}
+                                        onDidDismiss={() => setLoginError(false)}
+                                    ></IonAlert>
                                 )
                             }
                             <IonButton expand='block' onClick={onLogin}>Iniciar Sesión</IonButton>
@@ -70,7 +72,6 @@ const Login = ({ history }: Props) => {
                         </IonCol>
                     </IonRow>
                 </IonGrid>
-
             </IonContent>
         </IonPage >
     );
