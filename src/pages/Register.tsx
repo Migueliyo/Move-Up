@@ -4,19 +4,25 @@ import firebase from '../firebase/firebase';
 import { Props } from '../model/props';
 
 import "./InitalPages.css";
+import { useAuth } from '../auth/AuthProvider';
 
 const Register = ({ history }: Props) => {
-    const refName = useRef<HTMLIonInputElement>();
+    const refUsername = useRef<HTMLIonInputElement>();
+    const refFirstname = useRef<HTMLIonInputElement>();
+    const refSurname = useRef<HTMLIonInputElement>();
     const refEmail = useRef<HTMLIonInputElement>();
     const refPassword = useRef<HTMLIonInputElement>();
 
     const [registerError, setRegisterError] = useState(false);
 
     const onRegister = async () => {
-        const name = refName.current?.value as string;
+        const username = refUsername.current?.value as string;
+        const firstname = refFirstname.current?.value as string;
+        const surname = refSurname.current?.value as string;
         const email = refEmail.current?.value as string;
         const password = refPassword.current?.value as string;
-        const response = await firebase.register(email, password);
+        const { setUser } = useAuth();
+        const response = await firebase.register(email, password, firstname, surname, username, setUser);
         if (!response.error) {
             history.push('/');
         } else {
@@ -27,22 +33,39 @@ const Register = ({ history }: Props) => {
     return (
         <IonPage>
             <IonContent fullscreen>
-                <IonCard className="ion-card">
+                <IonCard className="ion-card-register">
                     <img
                         className="ion-image"
-                        src="public\assets\icon\favicon.png"
+                        src="assets\icon\favicon.png"
                         alt="login"
                     ></img>
-
                     <IonCardHeader>
                         <IonCardTitle className="ion-label">Registrarse</IonCardTitle>
                     </IonCardHeader>
                     <IonCardContent>
                         <IonInput
                             className="ion-input"
-                            ref={refName as any}
+                            ref={refFirstname as any}
                             type="text"
-                            placeholder="Email"
+                            placeholder="Nombre"
+                            label="Introduce tu nombre *"
+                            labelPlacement="floating"
+                            fill="solid"
+                        ></IonInput>
+                        <IonInput
+                            className="ion-input"
+                            ref={refSurname as any}
+                            type="text"
+                            placeholder="Apellido"
+                            label="Introduce tu apellido *"
+                            labelPlacement="floating"
+                            fill="solid"
+                        ></IonInput>
+                        <IonInput
+                            className="ion-input"
+                            ref={refUsername as any}
+                            type="text"
+                            placeholder="Nombre de usuario"
                             label="Introduce tu nombre de usuario *"
                             labelPlacement="floating"
                             fill="solid"
@@ -54,7 +77,7 @@ const Register = ({ history }: Props) => {
                             type="email"
                             labelPlacement="floating"
                             fill="solid"
-                            placeholder="Contraseña"
+                            placeholder="Email"
                         ></IonInput>
                         <IonInput
                             className="ion-input"

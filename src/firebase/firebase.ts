@@ -63,12 +63,33 @@ const login = async (email: string, password: string, setUser: (user: User | nul
     }
 }
 
-const register = async (email: string, password: string): Promise<FirebaseResponse> => {
+const register = async (email: string, password: string, firstname: string, surname: string, username: string, setUser: (user: User | null) => void): Promise<FirebaseResponse> => {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password)
         const user = userCredential.user;
+
+        const userToAdd: User = {
+            avatar: "https://firebasestorage.googleapis.com/v0/b/moveup-2ba70.appspot.com/o/avatar.png?alt=media&token=fe305d8f-d795-4a05-a21b-a08962685384",
+            bio: "¡Hola! Acabo de empezar a usar MoveUp",
+            firstname: firstname,
+            followers: 0,
+            following: 0,
+            link: "https://ionicframework.com/",
+            posts: [],
+            surname: surname,
+            title: "Nuevo",
+            username: username,
+            uid: user.uid 
+        };
+
+        const usersCol = collection(db, USERS_COLLECTION);
+        const docRef = await addDoc(usersCol, userToAdd);
+        
+        // Actualiza el usuario en el contexto
+        setUser(userToAdd);
+
         return {
-            data: user,
+            data: docRef,
             error: false
         }
     } catch (e) {
@@ -119,7 +140,8 @@ const getUser = async (id: string) => {
             posts: snapshot.get('posts'),
             surname: snapshot.get('surname'),
             title: snapshot.get('title'),
-            username: snapshot.get('username')
+            username: snapshot.get('username'),
+            uid: snapshot.get('uid')
         }
         return {
             data: user,

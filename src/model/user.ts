@@ -11,5 +11,6 @@ export interface User {
     posts: Array<Post>,
     surname: string,
     title: string,
-    username: string
+    username: string,
+    uid: string
 }
