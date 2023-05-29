@@ -44,7 +44,7 @@ const Login = ({ history }: Props) => {
         <IonCard className="ion-card">
           <img
             className="ion-image"
-            src="public\assets\icon\favicon.png"
+            src="assets\icon\favicon.png"
             alt="login"
           ></img>
 

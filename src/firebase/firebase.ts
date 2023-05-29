@@ -70,7 +70,7 @@ const register = async (email: string, password: string, firstname: string, surn
 
         const userToAdd: User = {
             avatar: "https://firebasestorage.googleapis.com/v0/b/moveup-2ba70.appspot.com/o/avatar.png?alt=media&token=fe305d8f-d795-4a05-a21b-a08962685384",
-            bio: "¡Hola! Acabo de empezar a usar MoveUp",
+            bio: "¡Hola! Acabo de empezar a usar Move Up",
             firstname: firstname,
             followers: 0,
             following: 0,

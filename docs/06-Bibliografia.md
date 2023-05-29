@@ -8,4 +8,5 @@ Esta parte constará webs, tutoriales, vídeos que he visto y que me han ayudado
 * Documentación de Firebase oficial: <https://firebase.google.com/docs>
 * Consultas variadas de información: <https://chat.openai.com/>
 * Tutorial para la implementación de la captura y subida de imágenes: <https://ionicframework.com/docs/react/your-first-app>
+* Resolución de problema con la cámara: <https://forum.ionicframework.com/t/problem-following-the-photo-gallery-tutorial/232236/6>
 

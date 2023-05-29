@@ -1,8 +1,13 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import './NewContent.css';
+import { camera } from 'ionicons/icons';
+import { usePhotoGallery } from '../components/usePhotoGallery';
 
-const NewContent : React.FC = () => {
+const NewContent: React.FC = () => {
+  
+  const { takePhoto } = usePhotoGallery();
+
   return (
     <IonPage>
       <IonHeader>
@@ -17,6 +22,13 @@ const NewContent : React.FC = () => {
           </IonToolbar>
         </IonHeader>
         <ExploreContainer />
+
+        <IonFab vertical="bottom" horizontal="center" slot="fixed">
+          <IonFabButton onClick={() => takePhoto()}>
+            <IonIcon icon={camera}></IonIcon>
+          </IonFabButton>
+        </IonFab>
+
       </IonContent>
     </IonPage>
   );

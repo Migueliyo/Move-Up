@@ -144,3 +144,33 @@ for (let i = 0; i < avatar_men.length; i++) {
 Para finalizar, tan solo había que ejecutar dicho script con nodejs y esperar a que todos los datos se introdujeran correctamente en la base de datos:
 
 ![Captura de la ejecución del script](/docs/media/script.png)
+
+## Modificación del archivo vite.congif.ts
+
+Una modificación importante que he tenido que realizar en el archivo *vite.config.ts* ha sido la implementación del siguiente código:
+
+```typescript
+optimizeDeps: {
+    exclude: [`@ionic/pwa-elements/loader`],
+  }
+```
+
+Hecho esto y, siguiendo el tutorial de como implmentar la cámara y la subida de archivos desde el dispositivo adjuntado en la bibliografía, he podido conseguir que funcionara. Este punto me parecía crítico ya que, en el propio tutorial, no se mencionaba y he tenido que buscar bastante información para solucionarlo. El archivo *vite.config.ts* ha quedado así:
+
+```typescript
+/// <reference types="vitest" />
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  optimizeDeps: {
+    exclude: [`@ionic/pwa-elements/loader`],
+  },
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/setupTests.ts',
+  }
+});
+```
