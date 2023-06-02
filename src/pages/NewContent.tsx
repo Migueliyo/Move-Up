@@ -1,14 +1,22 @@
-import { IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonImg, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
-import ExploreContainer from '../components/ExploreContainer';
-import './NewContent.css';
-import { camera, saveOutline } from 'ionicons/icons';
-import { UserPhoto, usePhotoGallery } from '../components/usePhotoGallery';
 import { useState } from 'react';
 import firebase from '../firebase/firebase';
 
+import { IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonImg, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
+import { camera, cameraOutline, imageOutline, moonOutline, saveOutline } from 'ionicons/icons';
+
+import { usePhotoGallery } from '../components/UploadContent';
+import Gallery from '../components/Gallery';
+
+import './NewContent.css';
+
 const NewContent: React.FC = () => {
 
-  const { photos, takePhoto } = usePhotoGallery();
+  const { photo, takePhotoFromCamera, takePhotoFromGalery } = usePhotoGallery();
+  const [selectedSegment, setSelectedSegment] = useState('photo');
+
+  const handleSegmentChange = (event: any) => {
+    setSelectedSegment(event.detail.value);
+  };
 
   return (
     <IonPage>
@@ -23,29 +31,44 @@ const NewContent: React.FC = () => {
             <IonTitle size="large">Publicar contenido</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <ExploreContainer />
 
-        <IonGrid>
-          <IonRow>
-            {photos.map((photo, index) => (
-              <IonCol size="6" key={photo.filepath}>
-                <IonImg src={photo.webviewPath} />
-              </IonCol>
-            ))}
-          </IonRow>
-        </IonGrid>
+        <IonSegment scrollable={true} value={selectedSegment} onIonChange={handleSegmentChange}>
+          <IonSegmentButton value="photo">
+            <IonIcon icon={cameraOutline}></IonIcon>
+          </IonSegmentButton>
+          <IonSegmentButton value="gallery">
+            <IonIcon icon={imageOutline}></IonIcon>
+          </IonSegmentButton>
+        </IonSegment>
+
+        {selectedSegment === 'photo' ? (
+          /* JSX para el componente de la foto */
+          <div>
+            {/* ... */}
+          </div>
+        ) : (
+          /* JSX para el componente de la galería */
+          <Gallery photos={photo!} />
+        )}
 
         <IonFab vertical="bottom" horizontal="start" slot="fixed">
-          <IonFabButton onClick={() => takePhoto()}>
+          <IonFabButton onClick={() => takePhotoFromCamera()}>
             <IonIcon icon={camera}></IonIcon>
           </IonFabButton>
         </IonFab>
 
         <IonFab vertical="bottom" horizontal="end" slot="fixed">
-          <IonFabButton onClick={() => firebase.addPost(photos[photos.length-1])}>
+          <IonFabButton onClick={() => takePhotoFromGalery()}>
+            <IonIcon icon={imageOutline}></IonIcon>
+          </IonFabButton>
+        </IonFab>
+
+        <IonFab vertical="bottom" horizontal="center" slot="fixed">
+          <IonFabButton onClick={() => firebase.addPost(photo!)}>
             <IonIcon icon={saveOutline}></IonIcon>
           </IonFabButton>
         </IonFab>
+
       </IonContent>
     </IonPage>
   );

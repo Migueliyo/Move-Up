@@ -7,7 +7,7 @@ import Profile from './pages/Profile';
 import Search from './pages/Search';
 import NewContent from './pages/NewContent';
 import Challenge from './pages/Challenge';
-import { barbellOutline, home, playCircleOutline, searchOutline } from 'ionicons/icons';
+import { barbellOutline, homeOutline, playCircleOutline, searchOutline } from 'ionicons/icons';
 import { useAuth } from './auth/AuthProvider';
 
 const Main: React.FC = () => {
@@ -43,7 +43,7 @@ const Main: React.FC = () => {
         </IonRouterOutlet>
         <IonTabBar slot="bottom">
           <IonTabButton tab="home" href="/home">
-            <IonIcon icon={home} />
+            <IonIcon icon={homeOutline} />
           </IonTabButton>
           <IonTabButton tab="explore" href="/explore">
             <IonIcon icon={searchOutline} />

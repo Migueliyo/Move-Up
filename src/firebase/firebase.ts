@@ -5,7 +5,8 @@ import { collection, getDocs, addDoc, Firestore, query, where } from "firebase/f
 import { getStorage, ref, uploadString } from "firebase/storage";
 import { FirebaseResponse } from "../model/response";
 import { User } from "../model/user";
-import { UserPhoto } from "../components/usePhotoGallery";
+import { UserPhoto } from "../model/userPhoto";
+
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -160,12 +161,14 @@ const getUser = async (id: string) => {
 }
 
 const addPost = async (file: UserPhoto) => {
-    const storageRef = ref(storage, 'some-child');
+    const storageRef = ref(storage, file.filepath);
 
-    // 'file' comes from the Blob or File API
+    // 'file' comes from data URL string
     uploadString(storageRef, file.webviewPath!, 'data_url').then((snapshot) => {
         console.log('Foto subida con éxito');
+        return
     });
+
 }
 
 // const deleteCurses = async (key) => {

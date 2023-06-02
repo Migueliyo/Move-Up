@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { isPlatform } from "@ionic/react";
 
 import {
@@ -8,18 +8,15 @@ import {
   Photo,
 } from "@capacitor/camera";
 import { Filesystem, Directory } from "@capacitor/filesystem";
-import { Preferences } from "@capacitor/preferences";
 import { Capacitor } from "@capacitor/core";
 
-export interface UserPhoto {
-  filepath: string;
-  webviewPath?: string;
-}
-
-const PHOTO_STORAGE = 'photos';
+import { useAuth } from "../auth/AuthProvider";
+import { UserPhoto } from "../model/userPhoto";
 
 export function usePhotoGallery() {
-  const [photos, setPhotos] = useState<UserPhoto[]>([]);
+  const [photo, setPhoto] = useState<UserPhoto>();
+  const { user } = useAuth();
+
   const savePicture = async (photo: Photo, fileName: string): Promise<UserPhoto> => {
     let base64Data: string;
     // "hybrid" will detect Cordova or Capacitor;
@@ -36,7 +33,7 @@ export function usePhotoGallery() {
       data: base64Data,
       directory: Directory.Data,
     });
-  
+
     if (isPlatform('hybrid')) {
       // Display the new image by rewriting the 'file://' path to HTTP
       // Details: https://ionicframework.com/docs/building/webview#file-protocol
@@ -53,43 +50,50 @@ export function usePhotoGallery() {
       };
     }
   };
-  useEffect(() => {
-    const loadSaved = async () => {
-      const { value } = await Preferences.get({ key: PHOTO_STORAGE });
-    
-      const photosInPreferences = (value ? JSON.parse(value) : []) as UserPhoto[];
-      // If running on the web...
-      if (!isPlatform('hybrid')) {
-        for (let photo of photosInPreferences) {
-          const file = await Filesystem.readFile({
-            path: photo.filepath,
-            directory: Directory.Data,
-          });
-          // Web platform only: Load the photo as base64 data
-          photo.webviewPath = `data:image/jpeg;base64,${file.data}`;
-        }
-      }
-      setPhotos(photosInPreferences);
-    };
-    loadSaved();
-  }, []);
-  const takePhoto = async () => {
+
+  const loadImage = async (photo: UserPhoto) => {
+    // If running on the web...
+    if (!isPlatform('hybrid')) {
+
+      const file = await Filesystem.readFile({
+        path: photo.filepath,
+        directory: Directory.Data,
+      });
+
+      // Web platform only: Load the photo as base64 data
+      photo.webviewPath = `data:image/jpeg;base64,${file.data}`;
+    }
+    setPhoto(photo);
+  }
+
+  const takePhotoFromCamera = async () => {
     const photo = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
       quality: 100,
     });
-  
-    const fileName = new Date().getTime() + '.jpeg';
+
+    const fileName = user!.username + new Date().getTime() + '.jpeg';
     const savedFileImage = await savePicture(photo, fileName);
-    const newPhotos = [savedFileImage, ...photos];
-    setPhotos(newPhotos);
-    Preferences.set({ key: PHOTO_STORAGE, value: JSON.stringify(newPhotos) });
+    loadImage(savedFileImage);
   };
+
+  const takePhotoFromGalery = async () => {
+    const photo = await Camera.getPhoto({
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Photos,
+      quality: 100,
+    });
+
+    const fileName = user!.username + new Date().getTime() + '.jpeg';
+    const savedFileImage = await savePicture(photo, fileName);
+    loadImage(savedFileImage);
+  };
+
   return {
-    takePhoto,
-    photos,
-    savePicture
+    takePhotoFromCamera,
+    takePhotoFromGalery,
+    photo
   };
 }
 
@@ -109,5 +113,3 @@ export async function base64FromPath(path: string): Promise<string> {
     reader.readAsDataURL(blob);
   });
 }
-
-

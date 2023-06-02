@@ -1,4 +1,4 @@
-import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonToolbar } from '@ionic/react';
+import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonToolbar, RefresherEventDetail } from '@ionic/react';
 import { addCircleOutline, heartOutline, logOutOutline, paperPlaneOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
@@ -11,24 +11,32 @@ import firebase from '../firebase/firebase';
 const Home = () => {
 
 	const [users, setUsers] = useState([]);
-    const location = useLocation();
+	const location = useLocation();
 
-    const getUsers = async () => {
-        const response: FirebaseResponse = await firebase.getUsers();
-        if (!response.error) {
-            setUsers(response.data);
-        } else {
-            console.log(response.error);
-        }
-    }
+	const getUsers = async () => {
+		const response: FirebaseResponse = await firebase.getUsers();
+		if (!response.error) {
+			setUsers(response.data);
+		} else {
+			console.log(response.error);
+		}
+	}
 
-    useEffect(
-        () => {
-            getUsers()
-        }, [location.key]
-    )
+	useEffect(
+		() => {
+			getUsers()
+		}, [location.key]
+	)
 
 	const posts = PostStore.useState(s => s.posts);
+
+	function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
+		setTimeout(() => {
+		  // Any calls to load data go here
+		  event.detail.complete();
+		  getUsers()
+		}, 2000);
+	}
 
 	return (
 		<IonPage>
@@ -40,27 +48,30 @@ const Home = () => {
 
 					<IonButtons slot="end">
 						<IonButton color="dark">
-							<IonIcon icon={ addCircleOutline } />
+							<IonIcon icon={addCircleOutline} />
 						</IonButton>
 						<IonButton color="dark">
-							<IonIcon icon={ heartOutline } />
+							<IonIcon icon={heartOutline} />
 						</IonButton>
 
 						<IonButton color="dark">
-							<IonIcon icon={ paperPlaneOutline } />
+							<IonIcon icon={paperPlaneOutline} />
 						</IonButton>
 
 						<IonButton onClick={firebase.logOut}>
 							<IonIcon icon={logOutOutline} />
-            			</IonButton>
+						</IonButton>
 
 					</IonButtons>
 				</IonToolbar>
 			</IonHeader>
 
 			<IonContent fullscreen>
-				<Stories users={ users } />
-				<Feed posts={ posts } />
+				<IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+					<IonRefresherContent></IonRefresherContent>
+				</IonRefresher>
+				<Stories users={users} />
+				<Feed posts={posts} />
 			</IonContent>
 		</IonPage>
 	);
