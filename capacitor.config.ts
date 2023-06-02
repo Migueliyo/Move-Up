@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.iesvirgendelcarmen.moveup',
-  appName: 'MoveUp',
+  appName: 'Move Up',
   webDir: 'dist',
   bundledWebRuntime: false
 };

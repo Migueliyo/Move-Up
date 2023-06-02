@@ -1,9 +1,10 @@
 import { IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonImg, IonPage, IonRow, IonTitle, IonToolbar } from '@ionic/react';
 import ExploreContainer from '../components/ExploreContainer';
 import './NewContent.css';
-import { camera } from 'ionicons/icons';
+import { camera, saveOutline } from 'ionicons/icons';
 import { UserPhoto, usePhotoGallery } from '../components/usePhotoGallery';
 import { useState } from 'react';
+import firebase from '../firebase/firebase';
 
 const NewContent: React.FC = () => {
 
@@ -34,12 +35,17 @@ const NewContent: React.FC = () => {
           </IonRow>
         </IonGrid>
 
-        <IonFab vertical="bottom" horizontal="center" slot="fixed">
+        <IonFab vertical="bottom" horizontal="start" slot="fixed">
           <IonFabButton onClick={() => takePhoto()}>
             <IonIcon icon={camera}></IonIcon>
           </IonFabButton>
         </IonFab>
 
+        <IonFab vertical="bottom" horizontal="end" slot="fixed">
+          <IonFabButton onClick={() => firebase.addPost(photos[photos.length-1])}>
+            <IonIcon icon={saveOutline}></IonIcon>
+          </IonFabButton>
+        </IonFab>
       </IonContent>
     </IonPage>
   );

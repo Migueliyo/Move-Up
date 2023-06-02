@@ -2,8 +2,10 @@ import { initializeApp } from "firebase/app";
 import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { deleteDoc, doc, getDoc, getFirestore } from "firebase/firestore";
 import { collection, getDocs, addDoc, Firestore, query, where } from "firebase/firestore";
+import { getStorage, ref, uploadString } from "firebase/storage";
 import { FirebaseResponse } from "../model/response";
 import { User } from "../model/user";
+import { UserPhoto } from "../components/usePhotoGallery";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -19,11 +21,12 @@ const firebaseConfig = {
     appId: "1:118564026428:web:9ad69b11bf3075af3c2b39",
     measurementId: "G-24V496X6YY"
 };
-  
+
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage();
 const USERS_COLLECTION = "usuarios";
 
 // El login realiza una consulta y devuelve el usuario de la colección usuarios al loguearse
@@ -38,17 +41,17 @@ const login = async (email: string, password: string, setUser: (user: User | nul
         let userData: any | null = null;
 
         getDocs(q)
-          .then((querySnapshot) => {
-            if (!querySnapshot.empty) {
-                // Recupera el primer documento encontrado (debería haber solo uno)
-                userData = querySnapshot.docs[0].data();
-                
-                // Actualiza el usuario en el contexto
-                setUser(userData);
-            }
-          }).catch((error) => {
-            console.log('Error en la consulta de la colección "usuarios":', error);
-          });
+            .then((querySnapshot) => {
+                if (!querySnapshot.empty) {
+                    // Recupera el primer documento encontrado (debería haber solo uno)
+                    userData = querySnapshot.docs[0].data();
+
+                    // Actualiza el usuario en el contexto
+                    setUser(userData);
+                }
+            }).catch((error) => {
+                console.log('Error en la consulta de la colección "usuarios":', error);
+            });
 
         return {
             data: userData,
@@ -79,12 +82,12 @@ const register = async (email: string, password: string, firstname: string, surn
             surname: surname,
             title: "Nuevo",
             username: username,
-            uid: user.uid 
+            uid: user.uid
         };
 
         const usersCol = collection(db, USERS_COLLECTION);
         const docRef = await addDoc(usersCol, userToAdd);
-        
+
         // Actualiza el usuario en el contexto
         setUser(userToAdd);
 
@@ -156,21 +159,14 @@ const getUser = async (id: string) => {
     }
 }
 
-// const addCurses = async (curses) => {
-//     try {
-//         const cursesCol = collection(db, USERS_COLLECTION);
-//         const docRef = await addDoc(cursesCol, curses);
-//         return {
-//             data: docRef,
-//             error: false
-//         }
-//     } catch (e) {
-//         return {
-//             data: null,
-//             error: true
-//         }
-//     }
-// }
+const addPost = async (file: UserPhoto) => {
+    const storageRef = ref(storage, 'some-child');
+
+    // 'file' comes from the Blob or File API
+    uploadString(storageRef, file.webviewPath!, 'data_url').then((snapshot) => {
+        console.log('Foto subida con éxito');
+    });
+}
 
 // const deleteCurses = async (key) => {
 //     if (key) {
@@ -186,7 +182,8 @@ const firebase = {
     register,
     logOut,
     auth,
-    getUser
+    getUser,
+    addPost
 }
 
 export default firebase;
