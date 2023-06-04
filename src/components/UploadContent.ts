@@ -7,11 +7,12 @@ import {
   CameraSource,
   Photo,
 } from "@capacitor/camera";
-import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Filesystem, Directory, FilesystemDirectory } from "@capacitor/filesystem";
 import { Capacitor } from "@capacitor/core";
 
 import { useAuth } from "../auth/AuthProvider";
 import { UserPhoto } from "../model/userPhoto";
+import firebase from "../firebase/firebase";
 
 export function usePhotoGallery() {
   const [photo, setPhoto] = useState<UserPhoto>();
@@ -67,32 +68,21 @@ export function usePhotoGallery() {
   }
 
   const takePhotoFromCamera = async () => {
-    const photo = await Camera.getPhoto({
+    const photoCamera = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
       quality: 100,
     });
 
     const fileName = user!.username + new Date().getTime() + '.jpeg';
-    const savedFileImage = await savePicture(photo, fileName);
+    const savedFileImage = await savePicture(photoCamera, fileName);
     loadImage(savedFileImage);
-  };
-
-  const takePhotoFromGalery = async () => {
-    const photo = await Camera.getPhoto({
-      resultType: CameraResultType.Uri,
-      source: CameraSource.Photos,
-      quality: 100,
-    });
-
-    const fileName = user!.username + new Date().getTime() + '.jpeg';
-    const savedFileImage = await savePicture(photo, fileName);
-    loadImage(savedFileImage);
+    if (photo != undefined) 
+      firebase.addPost(photo!, user!.uid);
   };
 
   return {
     takePhotoFromCamera,
-    takePhotoFromGalery,
     photo
   };
 }

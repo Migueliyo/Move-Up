@@ -4,8 +4,8 @@ const ExploreContainer: React.FC = () => {
   
   return (
     <div className="container">
-      <strong>Explore Container</strong>
-      <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+      <strong>Publicar contenido</strong>
+      <p>Pulsa en el botón</p>
     </div>
   );
 };
