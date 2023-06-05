@@ -1,10 +1,13 @@
-import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonToolbar, RefresherEventDetail } from '@ionic/react';
-import { addCircleOutline, heartOutline, logOutOutline, paperPlaneOutline } from 'ionicons/icons';
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
+
+import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonToolbar, RefresherEventDetail } from '@ionic/react';
+import { addCircleOutline, heartOutline, logOutOutline, paperPlaneOutline } from 'ionicons/icons';
+
+import { FirebaseResponse } from '../model/response';
+
 import Feed from '../components/Feed';
 import Stories from '../components/Stories';
-import { FirebaseResponse } from '../model/response';
 import firebase from '../firebase/firebase';
 
 const Home = () => {

@@ -5,13 +5,14 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+import { doc, getDoc, getFirestore, updateDoc, setDoc, arrayUnion } from "firebase/firestore";
 import {
   collection,
   getDocs,
   addDoc,
   query,
   where,
+  FieldValue
 } from "firebase/firestore";
 import {
   getDownloadURL,
@@ -19,6 +20,7 @@ import {
   ref,
   uploadString,
 } from "firebase/storage";
+
 import { FirebaseResponse } from "../model/response";
 import { User } from "../model/user";
 import { UserPhoto } from "../model/userPhoto";
@@ -70,7 +72,7 @@ const login = async (
       .then((querySnapshot) => {
         if (!querySnapshot.empty) {
           // Recupera el primer documento encontrado (debería haber solo uno)
-          userData = querySnapshot.docs[0].data();
+          userData = {id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data()}
 
           // Actualiza el usuario en el contexto
           setUser(userData);
@@ -174,7 +176,7 @@ const getUser = async (id: string) => {
     const ref = doc(collectionRef, id);
     const snapshot = await getDoc(ref);
     const user: User = {
-      id: snapshot.get("id"),
+      id: snapshot.id,
       avatar: snapshot.get("avatar"),
       bio: snapshot.get("bio"),
       firstname: snapshot.get("firstname"),
@@ -221,7 +223,7 @@ const getPosts = async (): Promise<FirebaseResponse> => {
   }
 };
 
-const addPost = async (file: UserPhoto, userId: string, titulo: string): Promise<FirebaseResponse> => {
+const addPost = async (file: UserPhoto, userId: string, titulo: string, username: string, avatar: string): Promise<FirebaseResponse> => {
   let post: Post;
   try {
     const storageRef = ref(storage, file.filepath);
@@ -240,12 +242,20 @@ const addPost = async (file: UserPhoto, userId: string, titulo: string): Promise
           likes: 0,
           liked: false,
           user_id: userId,
+          user_username: username,
+          user_avatar: avatar,
           time: new Date,
           comments: []
         }
 
         const usersCol = collection(db, POSTS_COLLECTION);
-        await addDoc(usersCol, post);
+        const docRef = await addDoc(usersCol, post);
+
+        // Actualiza el campo "posts" del usuario correspondiente
+        const userDocRef = doc(db, USERS_COLLECTION, userId);
+        await updateDoc(userDocRef, {
+          posts: arrayUnion(docRef)
+        });
       }
     )
     return {

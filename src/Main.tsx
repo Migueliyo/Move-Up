@@ -17,7 +17,6 @@ import Challenge from './pages/Challenge';
 const Main: React.FC = () => {
   
   const { user } = useAuth();
-  console.log(user);
 
   return (
   <IonApp>

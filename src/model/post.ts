@@ -7,6 +7,8 @@ export interface Post {
     likes: number,
     liked: boolean,
     user_id: string,
+    user_username: string,
+    user_avatar: string,
     time: Date,
     comments: Array<Comment>
 }

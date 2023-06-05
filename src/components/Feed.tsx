@@ -4,10 +4,11 @@ import { IonAvatar, IonIcon, IonRouterLink } from "@ionic/react";
 import { addCircleOutline, bookmarkOutline, chatbubbleOutline, ellipsisVertical, heart, heartOutline, paperPlaneOutline } from "ionicons/icons";
 
 import { likePost } from "../pages/PostStore";
-import styles from "./Feed.module.scss";
 import { useAuth } from "../auth/AuthProvider";
+import { Post } from "../model/post";
+
+import styles from "./Feed.module.scss";
 import TimeDifference from "./TimeDifference";
-import { Comment } from "../model/coment";
 
 const Feed = (props: { posts: any; }) => {
 
@@ -23,24 +24,23 @@ const Feed = (props: { posts: any; }) => {
     const sortedPosts = posts.sort((a: any, b: any) => b.time - a.time);
 
     return (
-
+        
         <div className={ styles.postsContainer }>
-            { sortedPosts.map( (post: { image: string; id: string; liked: boolean; caption: string; comments: Comment | any; time: any; userId: string}, index: Key) => {         
-
+            { sortedPosts.map( (post: Post, index: Key) => {         
                 return (
 
                     <div key={ index } className={ styles.postContainer }>
                         <div className={ styles.postProfile }>
                             <div className={ styles.postProfileInfo }>
                                 
-                                <IonRouterLink routerLink={ `/profile/${post.userId}`}>
+                                <IonRouterLink routerLink={ `/profile/${post.user_id}`}>
                                     <IonAvatar>
-                                        <img alt="post avatar" src={ user?.avatar } />
+                                        <img alt="post avatar" src={ post?.user_avatar } />
                                     </IonAvatar>
                                 </IonRouterLink>
 
-                                <IonRouterLink routerLink={ `/profile/${ post.userId }`}>
-                                    <p>{ user && user.username }</p>
+                                <IonRouterLink routerLink={ `/profile/${ post.user_id }`}>
+                                    <p>{ post && post.user_username }</p>
                                 </IonRouterLink>
                             </div>
 
@@ -71,8 +71,8 @@ const Feed = (props: { posts: any; }) => {
 
                         <div className={ styles.postCaption }>
                             <p><span className={ styles.postName }>
-                                <IonRouterLink routerLink={ `/profile/${ user && user.id }`}>
-                                    { user && user.username }
+                                <IonRouterLink routerLink={ `/profile/${ post && post.user_id }`}>
+                                    { post && post.user_username }
                                 </IonRouterLink>
                                 </span> { post.caption }</p>
                         </div>

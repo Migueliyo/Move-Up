@@ -4,9 +4,10 @@ import { useHistory } from 'react-router-dom';
 import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import { imagesOutline } from 'ionicons/icons';
 
-import firebase from '../firebase/firebase';
 import { usePhotoGallery } from '../components/UploadContent';
 import { useAuth } from '../auth/AuthProvider';
+
+import firebase from '../firebase/firebase';
 
 import './NewContent.css';
 
@@ -26,7 +27,7 @@ const NewContent: React.FC = () => {
 
   const handlePublish = async () => {
     const titleInput = refTitle.current?.value as string;
-    const response = await firebase.addPost(photo!, user!.uid, titleInput);
+    const response = await firebase.addPost(photo!, user!.id!, titleInput, user!.username, user!.avatar);
     if (!response.error){
       history.push('/home');
       setResetFields(true); 
