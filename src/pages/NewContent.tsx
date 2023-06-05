@@ -1,17 +1,38 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+
+import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { imagesOutline } from 'ionicons/icons';
+
 import firebase from '../firebase/firebase';
-
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonFab, IonFabButton, IonGrid, IonHeader, IonIcon, IonImg, IonPage, IonRow, IonSegment, IonSegmentButton, IonTitle, IonToolbar } from '@ionic/react';
-import { addCircle, addCircleOutline, addOutline, camera, cameraOutline, imageOutline, moonOutline, saveOutline } from 'ionicons/icons';
-
 import { usePhotoGallery } from '../components/UploadContent';
+import { useAuth } from '../auth/AuthProvider';
 
 import './NewContent.css';
-import ExploreContainer from '../components/ExploreContainer';
 
 const NewContent: React.FC = () => {
 
-  const { photo, takePhotoFromCamera } = usePhotoGallery();
+  const history = useHistory();
+  const { photo, setPhoto, takePhotoFromCamera } = usePhotoGallery();
+  const { user } = useAuth();
+  const [resetFields, setResetFields] = useState(false);
+  const [titleInput, setTitleInput] = useState('');
+  const refTitle = useRef<HTMLIonInputElement>();
+
+  const handleResetFields = () => {
+    setResetFields(true);
+    setTitleInput('');
+  };
+
+  const handlePublish = async () => {
+    const titleInput = refTitle.current?.value as string;
+    const response = await firebase.addPost(photo!, user!.uid, titleInput);
+    if (!response.error){
+      history.push('/home');
+      setResetFields(true); 
+      setPhoto(undefined);
+    }
+  };
 
   return (
     <IonPage>
@@ -21,25 +42,43 @@ const NewContent: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-        <IonHeader collapse="condense">
-          <IonToolbar>
-            <IonTitle size="large">Publicar contenido</IonTitle>
-          </IonToolbar>
-        </IonHeader>
+        <IonCard>
+          <IonCardHeader>
+            <IonCardTitle>Publicación de contenido</IonCardTitle>
+            <IonCardSubtitle>Rellena todos los campos para completar la subida</IonCardSubtitle>
+          </IonCardHeader>
 
-        <ExploreContainer />
+          <IonCardContent>
+          <img className='img' alt="Gallery Image" src={photo ? photo.webviewPath : 'assets/gallery.png'} />
+            {resetFields ? (
+              <>
+                <IonInput
+                  ref={refTitle as any}
+                  placeholder="Escribe un pie de foto"
+                  label="Pie de foto"
+                  onIonChange={handleResetFields}
+                  value=""
+                ></IonInput>
+                {setResetFields(false)}
+              </>
+            ) : (
+              <IonInput
+                ref={refTitle as any}
+                placeholder="Escribe un pie de foto"
+                label="Pie de foto"
+                value={titleInput}
+              ></IonInput>
+            )}
+          </IonCardContent>
+          <IonButton fill="clear" disabled={photo ? false : true} onClick={handlePublish}>Publicar</IonButton>
+          <IonButton fill="clear" disabled={photo ? false : true} onClick={() => {setResetFields(true); setPhoto(undefined)}}>Resetear campos</IonButton>
+        </IonCard>
 
         <IonFab vertical="bottom" horizontal="center" slot="fixed">
           <IonFabButton onClick={() => takePhotoFromCamera()}>
-            <IonIcon icon={addOutline}></IonIcon>
+            <IonIcon icon={imagesOutline}></IonIcon>
           </IonFabButton>
         </IonFab>
-
-        {/* <IonFab vertical="bottom" horizontal="center" slot="fixed">
-          <IonFabButton onClick={() => firebase.addPost(photo!)}>
-            <IonIcon icon={saveOutline}></IonIcon>
-          </IonFabButton>
-        </IonFab> */}
 
       </IonContent>
     </IonPage>

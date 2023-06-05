@@ -200,32 +200,44 @@ const getUser = async (id: string) => {
   }
 };
 
-const addPost = async (file: UserPhoto, userId: string) => {
-  const storageRef = ref(storage, file.filepath);
+const addPost = async (file: UserPhoto, userId: string, titulo: string): Promise<FirebaseResponse> => {
+  let post: Post;
+  try {
+    const storageRef = ref(storage, file.filepath);
+    // 'file' comes from data URL string
+    uploadString(storageRef, file.webviewPath!, "data_url").then(
+      async (snapshot) => {
+        console.log("Foto subida con éxito a cloud storage");
 
-  // 'file' comes from data URL string
-  uploadString(storageRef, file.webviewPath!, "data_url").then(
-    async (snapshot) => {
-      console.log("Foto subida con éxito a cloud storage");
+        // Obtén la URL de descarga del elemento subido
+        const downloadUrl = await getDownloadURL(snapshot.ref);
 
-      // Obtén la URL de descarga del elemento subido
-      const downloadUrl = await getDownloadURL(snapshot.ref);
+        post = {
+          id: file.filepath,
+          image: downloadUrl,
+          caption: titulo,
+          likes: 0,
+          liked: false,
+          user_id: userId,
+          time: new Date,
+          comments: []
+        }
 
-      const post: Post = {
-        id: file.filepath,
-        image: downloadUrl,
-        caption: "Probando",
-        likes: 0,
-        liked: false,
-        user_id: userId,
-        time: new Date,
-        comments: []
+        const usersCol = collection(db, POSTS_COLLECTION);
+        await addDoc(usersCol, post);
       }
-
-      const usersCol = collection(db, POSTS_COLLECTION);
-      await addDoc(usersCol, post);
-    }
-  );
+    )
+    return {
+      data: post!,
+      error: false,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
 };
 
 // const deleteCurses = async (key) => {
