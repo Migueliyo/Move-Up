@@ -1,18 +1,23 @@
+import { Redirect, Route } from 'react-router-dom';
+
 import { IonApp, IonIcon, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { Redirect, Route } from 'react-router-dom';
+import { addCircleOutline, barbellOutline, homeOutline, searchOutline } from 'ionicons/icons';
+
+import { useAuth } from './auth/AuthProvider';
+
 import Home from './pages/Home';
 import MyProfile from './pages/MyProfile';
 import Profile from './pages/Profile';
 import Search from './pages/Search';
 import NewContent from './pages/NewContent';
 import Challenge from './pages/Challenge';
-import { addCircleOutline, barbellOutline, homeOutline, searchOutline } from 'ionicons/icons';
-import { useAuth } from './auth/AuthProvider';
+
 
 const Main: React.FC = () => {
   
   const { user } = useAuth();
+  console.log(user);
 
   return (
   <IonApp>

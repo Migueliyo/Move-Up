@@ -37,7 +37,9 @@
 
     border-radius: 500px;
     width: 5.5rem;
-    height: auto;
+    height: 5.5rem;
+    object-fit: cover;
+    object-position: center center;
 }
 
 .profileInfo {

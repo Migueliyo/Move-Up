@@ -4,13 +4,13 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 import Feed from '../components/Feed';
 import Stories from '../components/Stories';
-import { PostStore } from './PostStore';
 import { FirebaseResponse } from '../model/response';
 import firebase from '../firebase/firebase';
 
 const Home = () => {
 
 	const [users, setUsers] = useState([]);
+	const [posts, setPosts] = useState([]);
 	const location = useLocation();
 
 	const getUsers = async () => {
@@ -22,19 +22,28 @@ const Home = () => {
 		}
 	}
 
+	const getPosts = async () => {
+		const response: FirebaseResponse = await firebase.getPosts();
+		if (!response.error) {
+			setPosts(response.data);
+		} else {
+			console.log(response.error);
+		}
+	}
+
 	useEffect(
 		() => {
-			getUsers()
+			getUsers();
+			getPosts();
 		}, [location.key]
 	)
-
-	const posts = PostStore.useState(s => s.posts);
 
 	function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
 		setTimeout(() => {
 		  // Any calls to load data go here
 		  event.detail.complete();
-		  getUsers()
+		  getUsers();
+		  getPosts();
 		}, 2000);
 	}
 

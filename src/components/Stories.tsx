@@ -4,7 +4,7 @@ import { useAuth } from "../auth/AuthProvider";
 
 const Stories = (props: { users: any; }) => {
 
-    const { users: profiles } = props;
+    const { users } = props;
     const { user } = useAuth();
 
     return (
@@ -12,7 +12,7 @@ const Stories = (props: { users: any; }) => {
         <IonRow className={ styles.stories }>
 
             <div className={ styles.storiesContainer }>
-                { profiles.map((story:any, index:number) => {
+                { users.map((story:any, index:number) => {
 
                     return (
                         <IonCol key={ index } className={ index === 0 ? styles.yourStory : styles.story }>

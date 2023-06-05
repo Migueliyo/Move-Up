@@ -5,12 +5,11 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { Timestamp, deleteDoc, doc, getDoc, getFirestore, setDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 import {
   collection,
   getDocs,
   addDoc,
-  Firestore,
   query,
   where,
 } from "firebase/firestore";
@@ -63,7 +62,7 @@ const login = async (
     const user = userCredential.user;
 
     // Consulta el usuario en la colección "usuarios"
-    const usersCollectionRef = collection(db, "usuarios");
+    const usersCollectionRef = collection(db, USERS_COLLECTION);
     const q = query(usersCollectionRef, where("uid", "==", user.uid));
     let userData: any | null = null;
 
@@ -175,6 +174,7 @@ const getUser = async (id: string) => {
     const ref = doc(collectionRef, id);
     const snapshot = await getDoc(ref);
     const user: User = {
+      id: snapshot.get("id"),
       avatar: snapshot.get("avatar"),
       bio: snapshot.get("bio"),
       firstname: snapshot.get("firstname"),
@@ -195,6 +195,27 @@ const getUser = async (id: string) => {
     console.log(e);
     return {
       data: undefined,
+      error: true,
+    };
+  }
+};
+
+const getPosts = async (): Promise<FirebaseResponse> => {
+  try {
+    const postsCol = collection(db, POSTS_COLLECTION);
+    const snapshot = await getDocs(postsCol);
+    const postsList = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return {
+      data: postsList,
+      error: false,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
       error: true,
     };
   }
@@ -255,6 +276,7 @@ const firebase = {
   logOut,
   auth,
   getUser,
+  getPosts,
   addPost,
 };
 

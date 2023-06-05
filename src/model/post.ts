@@ -1,4 +1,4 @@
-import { Coment } from "./coment";
+import { Comment } from "./coment";
 
 export interface Post {
     id: string,
@@ -8,5 +8,5 @@ export interface Post {
     liked: boolean,
     user_id: string,
     time: Date,
-    comments: Array<Coment>
+    comments: Array<Comment>
 }
