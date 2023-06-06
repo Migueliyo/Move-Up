@@ -1,35 +1,54 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
-import { IonBackButton, IonButton, IonButtons, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonRow, IonToolbar, useIonViewWillEnter } from '@ionic/react';
-import { addCircleOutline, arrowBackOutline, bookmarksOutline, chevronDown, ellipsisVertical, gridOutline, menuOutline, personOutline } from 'ionicons/icons';
+import { IonBackButton, IonButton, IonButtons, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonRow, IonSegment, IonSegmentButton, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
+import { addCircleOutline, arrowBackOutline, bookmarksOutline, chevronDown, ellipsisVertical, gridOutline, menuOutline } from 'ionicons/icons';
 
-import firebase from '../firebase/firebase';
 import { useAuth } from '../auth/AuthProvider';
+import { Post } from '../model/post';
 import { User } from '../model/user';
 import { RouteParams } from '../model/routeParams';
+import firebase from '../firebase/firebase';
 
 import styles from './Profile.module.scss';
+
 
 const Profile = () => {
 
     const { user } = useAuth();
     const [profile, setProfile] = useState<User>();
+    const [posts, setPosts] = useState<Post[]>();
     const params = useParams<RouteParams>();
     const [profileID, setProfileID] = useState<string>(params.id);
     
     const getUser = async (id: string) => {
-      const tempProfile = await firebase.getUser(id);
-      setProfile(tempProfile.data);
+        const response = await firebase.getUser(id);
+        if (!response.error)
+          setProfile(response.data);
     };
+
+    const getPostFromIdUser = async (id: string) => {
+        const response = await firebase.getPostsFromIdUser(id);
+        if (!response.error)
+            setPosts(response.data);
+    }
     
     useEffect(() => {
         setProfileID(params.id);
-      }, [params.id]);
-      
-      useEffect(() => {
-        getUser(profileID);
-      }, [profileID]);
+    }, [params.id]);
+    
+    useEffect(() => {
+      getUser(profileID);
+      getPostFromIdUser(profileID);
+    }, [profileID]);
+
+    const handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
+		setTimeout(() => {
+			// Any calls to load data go here
+			event.detail.complete();
+            getPostFromIdUser(profileID);
+		}, 2000);
+	}
 
 	return (
 		<IonPage>
@@ -72,6 +91,9 @@ const Profile = () => {
 			</IonHeader>
 
 			<IonContent fullscreen>
+                <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+                    <IonRefresherContent></IonRefresherContent>
+                </IonRefresher>
                 <IonGrid>
                     <IonRow className="ion-text-center ion-justify-content-between ion-align-self-center ion-align-items-center">
                         <IonCol size="4">
@@ -132,18 +154,22 @@ const Profile = () => {
                 </IonGrid>
 
                 <IonRow className="ion-text-center ion-justify-content-center ion-align-items-center ion-align-self-center">
-                    <IonCol size="6" className="ion-justify-content-center ion-align-items-center ion-align-self-center" style={{ borderBottom: "2px solid black", marginBottom: "2px" }}>
-                        <IonIcon style={{ fontSize: "1.5rem" }} icon={ gridOutline } />
-                    </IonCol>
-
-                    <IonCol size="6" className="ion-justify-content-center ion-align-items-center ion-align-self-center">
-                        <IonIcon style={{ fontSize: "1.5rem" }} icon={ bookmarksOutline } />
-                    </IonCol>
+                    <IonSegment value="default" className={styles.ionSegment}>
+                        <IonSegmentButton value="posts" className={styles.customSegment}>
+                            <IonCol size="6" className="ion-justify-content-center ion-align-items-center ion-align-self-center" style={{ marginBottom: "2px" }}>
+                                <IonIcon style={{ fontSize: "1.5rem", color: "black" }} icon={gridOutline} />
+                            </IonCol>
+                        </IonSegmentButton>
+                        <IonSegmentButton value="saved" className={styles.customSegment}>
+                            <IonCol size="6" className="ion-justify-content-center ion-align-items-center ion-align-self-center">
+                                <IonIcon style={{ fontSize: "1.5rem", color: "black" }} icon={bookmarksOutline} />
+                            </IonCol>
+                        </IonSegmentButton>
+                    </IonSegment>
                 </IonRow>
 
                 <IonRow className="ion-no-padding ion-no-margin">
-                    { profile && profile.posts && profile.posts.map((post, index) => {
-
+                    { posts && posts.map((post, index) => {
                         return (
                             <IonCol className={ styles.postCol } key={ index } size="4">
                                 <img alt="post" src={post.image} />

@@ -94,9 +94,31 @@
 }
 
 .postCol {
-
     --ion-grid-column-padding: 0rem;
     padding: 0.1rem;
     padding-bottom: 0.01rem !important;
     padding-top: 0.01rem !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+.postCol img {
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.ionSegment {
+    margin-bottom: 0.1rem;
+}
+
+.customSegment {
+    --color: black;
+    --indicator-color: black;
+}
+  
+
+
+  
+  

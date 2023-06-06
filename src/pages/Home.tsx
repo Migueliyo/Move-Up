@@ -42,7 +42,7 @@ const Home = () => {
 		}, [location.key]
 	)
 
-	function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
+	const handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
 		setTimeout(() => {
 			// Any calls to load data go here
 			event.detail.complete();

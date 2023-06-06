@@ -223,6 +223,38 @@ const getPosts = async (): Promise<FirebaseResponse> => {
   }
 };
 
+const getPostsFromIdUser = async (userId: string): Promise<FirebaseResponse> => {
+  try {
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+    const userDocSnap = await getDoc(userDocRef);
+    const userData = userDocSnap.data();
+
+    // Obtener las referencias a los posts del usuario
+    const postRefs = userData?.posts || [];
+
+    // Obtener los datos de los posts utilizando las referencias
+    const postPromises = postRefs.map(async (postRef: any) => {
+      const postDocSnap = await getDoc(postRef);
+      const postData = postDocSnap.data();
+      return postData;
+    });
+
+    // Esperar a que se completen todas las promesas de los posts
+    const posts = await Promise.all(postPromises);
+
+    return {
+      data: posts,
+      error: false,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
 const addPost = async (file: UserPhoto, userId: string, titulo: string, username: string, avatar: string): Promise<FirebaseResponse> => {
   let post: Post;
   try {
@@ -348,7 +380,8 @@ const firebase = {
   addPost,
   addLike,
   deleteLike,
-  checkLike
+  checkLike,
+  getPostsFromIdUser
 };
 
 export default firebase;
