@@ -1,0 +1,30 @@
+.containerSearch {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+}
+  
+.containerSearch strong {
+    font-size: 15px;
+}
+  
+.containerSearch p {
+    font-size: 12px;
+    color: #8c8c8c;
+    margin: 0;
+}
+
+.searchImage {
+    border-radius: 500px;
+}
+
+.toolbar-background {
+    background-color: white;
+}
+
+.searchbar-input {
+    border: 0 !important;
+    box-shadow: none !important;
+}

@@ -1,3 +1,5 @@
+import { useRef, useState } from "react";
+
 import {
   IonAlert,
   IonButton,
@@ -10,10 +12,11 @@ import {
   IonInput,
   IonPage,
 } from "@ionic/react";
-import { useRef, useState } from "react";
-import firebase from "../firebase/firebase";
+
 import { Props } from "../model/props";
 import { useAuth } from "../auth/AuthProvider";
+import firebase from "../firebase/firebase";
+
 
 import "./InitalPages.css";
 
