@@ -5,6 +5,7 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonRefr
 import { addCircleOutline, heartOutline, logOutOutline, paperPlaneOutline } from 'ionicons/icons';
 
 import { FirebaseResponse } from '../model/response';
+import { LikedProvider } from '../context/LikedContext';
 
 import Feed from '../components/Feed';
 import Stories from '../components/Stories';
@@ -43,10 +44,10 @@ const Home = () => {
 
 	function handleRefresh(event: CustomEvent<RefresherEventDetail>) {
 		setTimeout(() => {
-		  // Any calls to load data go here
-		  event.detail.complete();
-		  getUsers();
-		  getPosts();
+			// Any calls to load data go here
+			event.detail.complete();
+			getUsers();
+			getPosts();
 		}, 2000);
 	}
 
@@ -83,7 +84,10 @@ const Home = () => {
 					<IonRefresherContent></IonRefresherContent>
 				</IonRefresher>
 				<Stories users={users} />
-				<Feed posts={posts} />
+				<LikedProvider>
+					<Feed posts={posts} />
+				</LikedProvider>
+
 			</IonContent>
 		</IonPage>
 	);

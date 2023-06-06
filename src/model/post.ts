@@ -1,11 +1,10 @@
 import { Comment } from "./coment";
 
 export interface Post {
-    id: string,
+    id?: string,
     image: string,
     caption: string,
-    likes: number,
-    liked: boolean,
+    likes: Array<any>,
     user_id: string,
     user_username: string,
     user_avatar: string,

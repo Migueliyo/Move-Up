@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { doc, getDoc, getFirestore, updateDoc, setDoc, arrayUnion } from "firebase/firestore";
+import { doc, getDoc, getFirestore, updateDoc, setDoc, arrayUnion, arrayRemove } from "firebase/firestore";
 import {
   collection,
   getDocs,
@@ -236,11 +236,9 @@ const addPost = async (file: UserPhoto, userId: string, titulo: string, username
         const downloadUrl = await getDownloadURL(snapshot.ref);
 
         post = {
-          id: file.filepath,
           image: downloadUrl,
           caption: titulo,
-          likes: 0,
-          liked: false,
+          likes:  [],
           user_id: userId,
           user_username: username,
           user_avatar: avatar,
@@ -271,6 +269,66 @@ const addPost = async (file: UserPhoto, userId: string, titulo: string, username
   }
 };
 
+const addLike = async (userId: string, postId: string): Promise<FirebaseResponse> => {
+  try {
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+    const postDocRef = doc(db, POSTS_COLLECTION, postId);
+    await updateDoc(postDocRef, {
+      likes: arrayUnion(userDocRef)
+    });
+    return {
+      data: userDocRef,
+      error: false,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
+const deleteLike = async (userId: string, postId: string): Promise<FirebaseResponse> => {
+  try {
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+    const postDocRef = doc(db, POSTS_COLLECTION, postId);
+    await updateDoc(postDocRef, {
+      likes: arrayRemove(userDocRef)
+    });
+    return {
+      data: userDocRef,
+      error: false,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
+const checkLike = async (userId: string, postId: string): Promise<boolean> => {
+  try {
+    const postDocRef = doc(db, POSTS_COLLECTION, postId);
+    const postSnapshot = await getDoc(postDocRef);
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+
+    if (postSnapshot.exists()) {
+      const postData = postSnapshot.data();
+      const likesArray = postData.likes;
+      return likesArray.includes(userDocRef);
+    } else {
+      return false;
+    }
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+
 // const deleteCurses = async (key) => {
 //     if (key) {
 //         const curses = doc(db, USERS_COLLECTION, key);
@@ -288,6 +346,9 @@ const firebase = {
   getUser,
   getPosts,
   addPost,
+  addLike,
+  deleteLike,
+  checkLike
 };
 
 export default firebase;
