@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 
-import { IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonPage, IonTitle, IonToolbar } from '@ionic/react';
 import { imagesOutline } from 'ionicons/icons';
 
 import { usePhotoGallery } from '../components/UploadContent';
@@ -19,6 +19,8 @@ const NewContent: React.FC = () => {
   const [resetFields, setResetFields] = useState(false);
   const [titleInput, setTitleInput] = useState('');
   const refTitle = useRef<HTMLIonInputElement>();
+  const [error, setError] = useState(false);
+  const [errorAlert, setErrorAlert] = useState<string | undefined>(undefined);
 
   const handleResetFields = () => {
     setResetFields(true);
@@ -26,13 +28,23 @@ const NewContent: React.FC = () => {
   };
 
   const handlePublish = async () => {
-    const titleInput = refTitle.current?.value as string;
-    const response = await firebase.addPost(photo!, user!.id!, titleInput, user!.username, user!.avatar);
-    if (!response.error){
-      history.push('/home');
-      setResetFields(true); 
-      setPhoto(undefined);
+    try {
+      const titleInput = refTitle.current?.value as string;
+      const response = await firebase.addPost(photo!, user!.id!, titleInput, user!.username, user!.avatar);
+      if (!response.error){
+        history.push('/home');
+        setResetFields(true); 
+        setPhoto(undefined);
+      }
+    } catch (e:any) {
+      setError(true);
+      setErrorAlert(e.message);
     }
+  };
+
+  const handleAlertDismiss = () => {
+    setErrorAlert(undefined);
+    setError(false);
   };
 
   return (
@@ -80,6 +92,14 @@ const NewContent: React.FC = () => {
             <IonIcon icon={imagesOutline}></IonIcon>
           </IonFabButton>
         </IonFab>
+
+        <IonAlert
+          isOpen={error}
+          header="Error"
+          message={errorAlert}
+          buttons={["OK"]}
+          onDidDismiss={handleAlertDismiss}
+        />
 
       </IonContent>
     </IonPage>
