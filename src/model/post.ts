@@ -1,4 +1,4 @@
-import { Comment } from "./coment";
+import { Comment } from "./comment";
 
 export interface Post {
     id?: string,

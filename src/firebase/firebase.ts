@@ -25,6 +25,7 @@ import { FirebaseResponse } from "../model/response";
 import { User } from "../model/user";
 import { UserPhoto } from "../model/userPhoto";
 import { Post } from "../model/post";
+import { Comment } from "../model/comment";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -48,6 +49,7 @@ const auth = getAuth(app);
 const storage = getStorage();
 const USERS_COLLECTION = "usuarios";
 const POSTS_COLLECTION = "posts";
+const COMMENTS_COLLECTION = "comments";
 
 // El login realiza una consulta y devuelve el usuario de la colección usuarios al loguearse
 const login = async (
@@ -526,6 +528,63 @@ const checkFollow = async (userIdLogged: string, userIdFollowing: string): Promi
   }
 };
 
+const addComment = async (postId: string, userId: string, username: string, avatar: string, commentText: string): Promise<FirebaseResponse> => {
+  try {
+    const comment: Comment = {
+      user_id: userId,
+      user_username: username,
+      user_avatar: avatar,
+      time: new Date,
+      comment: commentText
+    }
+    const commentsCol = collection(db, COMMENTS_COLLECTION);
+    const docRef = await addDoc(commentsCol, comment)
+
+    const postDocRef = doc(db, POSTS_COLLECTION, postId);
+    await updateDoc(postDocRef, {
+      comments: arrayUnion(docRef)
+    });
+    return {
+      data: docRef,
+      error: false,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
+const getCommentsFromIdPost = async (postId: string): Promise<FirebaseResponse> => {
+  try {
+    const postDocRef = doc(db, POSTS_COLLECTION, postId);
+    const postDocSnap = await getDoc(postDocRef);
+    const postData = postDocSnap.data();
+
+    const postComments = postData?.comments || [];
+
+    const postPromises = postComments.map(async (comment: any) => {
+      const commentDocSnap = await getDoc(comment);
+      const commentData = commentDocSnap.data();
+      return commentData;
+    });
+
+    const comments = await Promise.all(postPromises);
+
+    return {
+      data: comments,
+      error: false,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
 
 // const deleteCurses = async (key) => {
 //     if (key) {
@@ -552,7 +611,9 @@ const firebase = {
   unfollow,
   getFollowers,
   getFollowing,
-  checkFollow
+  checkFollow,
+  addComment,
+  getCommentsFromIdPost
 };
 
 export default firebase;
