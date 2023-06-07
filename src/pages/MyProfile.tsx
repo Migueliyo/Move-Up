@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router';
 
 import { IonButton, IonButtons, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonLabel, IonPage, IonRefresher, IonRefresherContent, IonRow, IonSegment, IonSegmentButton, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
 import { addCircleOutline, bookmarksOutline, chevronDown, gridOutline, menuOutline } from 'ionicons/icons';
@@ -12,6 +13,7 @@ import styles from './Profile.module.scss';
 
 const MyProfile = () => {
 
+    const history = useHistory();
     const { user } = useAuth();
     const [profile, setProfile] = useState<User>();
     const [posts, setPosts] = useState<Post[]>();
@@ -45,7 +47,6 @@ const MyProfile = () => {
             <IonHeader>
                 <IonToolbar>
                     <IonButtons slot="start">
-
                         <p className={styles.username}>
                             {profile && profile.username}
                             <IonIcon icon={chevronDown} />
@@ -79,21 +80,21 @@ const MyProfile = () => {
                                     <IonCardTitle className={styles.value}>
                                         {profile && profile.posts && profile.posts.length}
                                     </IonCardTitle>
-                                    <IonCardSubtitle className={styles.label}>Posts</IonCardSubtitle>
+                                    <IonCardSubtitle className={styles.label}>Publicaciones</IonCardSubtitle>
                                 </IonCol>
 
-                                <IonCol size="4" className="ion-text-center">
+                                <IonCol size="4" className="ion-text-center" onClick={()=>{history.push('/profile/' + user!.id + '/followers')}}>
                                     <IonCardTitle className={styles.value}>
-                                        {profile && profile.followers}
+                                        {profile && profile.followers.length ? profile.followers.length : 0}
                                     </IonCardTitle>
-                                    <IonCardSubtitle className={styles.label}>Followers</IonCardSubtitle>
+                                    <IonCardSubtitle className={styles.label}>Seguidores</IonCardSubtitle>
                                 </IonCol>
 
-                                <IonCol size="4" className="ion-text-center">
+                                <IonCol size="4" className="ion-text-center" onClick={()=>{history.push('/profile/' + user!.id + '/following')}}>
                                     <IonCardTitle className={styles.value}>
-                                        {profile && profile.following}
+                                        {profile && profile.following.length ? profile.following.length : 0}
                                     </IonCardTitle>
-                                    <IonCardSubtitle className={styles.label}>Following</IonCardSubtitle>
+                                    <IonCardSubtitle className={styles.label}>Siguiendo</IonCardSubtitle>
                                 </IonCol>
                             </IonRow>
                         </IonCol>

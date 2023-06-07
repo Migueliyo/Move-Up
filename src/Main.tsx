@@ -12,6 +12,8 @@ import Profile from './pages/Profile';
 import Search from './pages/Search';
 import NewContent from './pages/NewContent';
 import Challenge from './pages/Challenge';
+import Followers from './pages/Followers';
+import Following from './pages/Following';
 
 
 const Main: React.FC = () => {
@@ -31,6 +33,12 @@ const Main: React.FC = () => {
           </Route>
           <Route exact path="/profile/:id">
             <Profile />
+          </Route>
+          <Route exact path="/profile/:id/followers">
+            <Followers />
+          </Route>
+          <Route exact path="/profile/:id/following">
+            <Following />
           </Route>
           <Route exact path="/explore">
             <Search />

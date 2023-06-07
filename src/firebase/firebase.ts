@@ -116,8 +116,8 @@ const register = async (
         "https://firebasestorage.googleapis.com/v0/b/moveup-2ba70.appspot.com/o/avatar.png?alt=media&token=fe305d8f-d795-4a05-a21b-a08962685384",
       bio: "¡Hola! Acabo de empezar a usar Move Up",
       firstname: firstname,
-      followers: 0,
-      following: 0,
+      followers: [],
+      following: [],
       link: "https://ionicframework.com/",
       posts: [],
       surname: surname,
@@ -360,6 +360,151 @@ const checkLike = async (userId: string, postId: string): Promise<boolean> => {
   }
 };
 
+const getLikes = async (postId: string): Promise<FirebaseResponse> => {
+  try {
+    const postDocRef = doc(db, POSTS_COLLECTION, postId);
+    const postDocSnapshot = await getDoc(postDocRef);
+    
+    if (postDocSnapshot.exists()) {
+      const likesArray = postDocSnapshot.data().likes;
+      const likesData = [];
+
+      for (const likeRef of likesArray) {
+        const likeDocSnapshot = await getDoc(likeRef);
+        if (likeDocSnapshot.exists()) {
+          likesData.push(likeDocSnapshot.data());
+        }
+      }
+      return {
+        data: likesData,
+        error: false,
+      };
+    } else {
+      throw new Error("El post no existe");
+    }
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
+const follow = async (userIdLogged: string, userIdFollowing: string): Promise<FirebaseResponse> => {
+  try {
+    const userLoggedDocRef = doc(db, USERS_COLLECTION, userIdLogged);
+    const userFollowingDocRef = doc(db, USERS_COLLECTION, userIdFollowing);
+    // Añadiendo la referencia del seguido a los seguidos del usuario logueado
+    await updateDoc(userLoggedDocRef, {
+      following: arrayUnion(userFollowingDocRef)
+    });
+    // Añadiendo la referencia de seguidor a los seguidores del usuario seguido
+    await updateDoc(userFollowingDocRef, {
+      followers: arrayUnion(userLoggedDocRef)
+    });
+    return {
+      data: "El usuario " + userLoggedDocRef.id + " ahora sigue a " + userFollowingDocRef.id,
+      error: false,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
+const unfollow = async (userIdLogged: string, userIdFollowing: string): Promise<FirebaseResponse> => {
+  try {
+    const userLoggedDocRef = doc(db, USERS_COLLECTION, userIdLogged);
+    const userFollowingDocRef = doc(db, USERS_COLLECTION, userIdFollowing);
+    // Añadiendo la referencia del seguido a los seguidos del usuario logueado
+    await updateDoc(userLoggedDocRef, {
+      following: arrayRemove(userFollowingDocRef)
+    });
+    // Añadiendo la referencia de seguidor a los seguidores del usuario seguido
+    await updateDoc(userFollowingDocRef, {
+      followers: arrayRemove(userLoggedDocRef)
+    });
+    return {
+      data: "El usuario " + userLoggedDocRef.id + " deja de seguir a " + userFollowingDocRef.id,
+      error: false,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
+const getFollowers = async (userId: string): Promise<FirebaseResponse> => {
+  try {
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      const followers = [];
+      if (userData.followers) {
+        // Recorre las referencias de seguidores y obtén los datos de cada usuario seguidor
+        for (const followerRef of userData.followers) {
+          const followerDoc = await getDoc(followerRef);
+          if (followerDoc.exists()) {
+            followers.push(followerDoc.data());
+          }
+        }
+      }
+      return {
+        data: followers,
+        error: false,
+      };
+    } else {
+      throw new Error("El usuario no existe");
+    }
+  } catch (e) {
+    console.log("¡No tiene seguidores! -> "+ e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
+const getFollowing = async (userId: string): Promise<FirebaseResponse> => {
+  try {
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      const following = [];
+      if (userData.following) {
+        // Recorre las referencias de seguidos y obtén los datos de cada usuario seguido
+        for (const followingRef of userData.following) {
+          const followingDoc = await getDoc(followingRef);
+          if (followingDoc.exists()) {
+            following.push(followingDoc.data());
+          }
+        }
+      }
+      return {
+        data: following,
+        error: false,
+      };
+    } else {
+      throw new Error("El usuario no existe");
+    }
+  } catch (e) {
+    console.log("¡No tiene seguidos! -> "+ e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
 
 // const deleteCurses = async (key) => {
 //     if (key) {
@@ -381,7 +526,11 @@ const firebase = {
   addLike,
   deleteLike,
   checkLike,
-  getPostsFromIdUser
+  getPostsFromIdUser,
+  follow,
+  unfollow,
+  getFollowers,
+  getFollowing
 };
 
 export default firebase;
