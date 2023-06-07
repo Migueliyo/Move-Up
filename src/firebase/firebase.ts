@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { doc, getDoc, getFirestore, updateDoc, setDoc, arrayUnion, arrayRemove } from "firebase/firestore";
+import { doc, getDoc, getFirestore, updateDoc, setDoc, arrayUnion, arrayRemove, DocumentReference } from "firebase/firestore";
 import {
   collection,
   getDocs,
@@ -350,7 +350,8 @@ const checkLike = async (userId: string, postId: string): Promise<boolean> => {
     if (postSnapshot.exists()) {
       const postData = postSnapshot.data();
       const likesArray = postData.likes;
-      return likesArray.includes(userDocRef);
+      const likesIds = likesArray.map((docRef: DocumentReference) => docRef.id);
+      return likesIds.includes(userDocRef.id);
     } else {
       return false;
     }
@@ -505,6 +506,26 @@ const getFollowing = async (userId: string): Promise<FirebaseResponse> => {
   }
 };
 
+const checkFollow = async (userIdLogged: string, userIdFollowing: string): Promise<boolean> => {
+  try {
+    const userLoggedDocRef = doc(db, USERS_COLLECTION, userIdLogged);
+    const userSnapshot = await getDoc(userLoggedDocRef);
+    const userFollowingDocRef = doc(db, USERS_COLLECTION, userIdFollowing);
+
+    if (userSnapshot.exists()) {
+      const followingData = userSnapshot.data();
+      const followingArray = followingData.following;
+      const followingIds = followingArray.map((docRef: DocumentReference) => docRef.id);
+      return followingIds.includes(userFollowingDocRef.id);
+    } else {
+      return false;
+    }
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
 
 // const deleteCurses = async (key) => {
 //     if (key) {
@@ -530,7 +551,8 @@ const firebase = {
   follow,
   unfollow,
   getFollowers,
-  getFollowing
+  getFollowing,
+  checkFollow
 };
 
 export default firebase;

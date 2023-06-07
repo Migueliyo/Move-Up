@@ -77,9 +77,9 @@ const Follow = (props: { clicked: string }) => {
                 <IonList>
                     {followers.length === 0 ?
                         user!.id === profileID || profileID === undefined ?
-                            <p className="parrafo-info"> Todavía no estás siguiendo a nadie</p>
+                            <p className="parrafo-info"> Todavía no tienes ningún seguidor</p>
                             :
-                            <p className="parrafo-info"> Todavía no está siguiendo a nadie</p>
+                            <p className="parrafo-info"> Todavía no tiene ningun seguidor</p>
                         :
                         followers.map((user: User) => {
                             // console.log(user.id);

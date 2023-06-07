@@ -23,7 +23,7 @@ const Profile = () => {
     const [posts, setPosts] = useState<Post[]>();
     const params = useParams<RouteParams>();
     const [profileID, setProfileID] = useState<string>(params.id);
-    const [following, setFollowing] = useState<boolean>(false);
+    const [following, setFollowing] = useState<boolean>();
     const [activeSegment, setActiveSegment] = useState('posts');
     const [clickedSegment, setClickedSegment] = useState('');
 
@@ -39,6 +39,11 @@ const Profile = () => {
             setPosts(response.data);
     }
 
+    const checkFollow = async (idUserLogged: string, idUserFollow: string) => {
+        const response = await firebase.checkFollow(idUserLogged, idUserFollow);
+        setFollowing(response);
+    }
+
     useEffect(() => {
         setProfileID(params.id);
     }, [params.id]);
@@ -47,6 +52,7 @@ const Profile = () => {
         if (params.id === user!.id) {
             history.replace('/myprofile');
         } else {
+            checkFollow(user!.id!, profileID);
             getUser(profileID);
             getPostFromIdUser(profileID);
         }
@@ -149,43 +155,25 @@ const Profile = () => {
                             </IonCol>
                         </IonRow>
 
-                        {user!.id === profileID ?
-                            <IonRow className={styles.profileActions}>
-                                <IonCol size="4">
-                                    <IonButton className={styles.lightButton} expand="block" fill="outline">Edit Profile</IonButton>
-                                </IonCol>
-
-                                <IonCol size="4">
-                                    <IonButton className={styles.lightButton} fill="outline" expand="block">Promotions</IonButton>
-                                </IonCol>
-
-                                <IonCol size="4">
-                                    <IonButton className={styles.lightButton} fill="outline" expand="block">Insights</IonButton>
-                                </IonCol>
-                            </IonRow>
-                            :
-                            <IonRow className={styles.profileActions}>
-                                <IonCol size="5">
-                                    {!following && (
-                                        <IonButton expand="block" color="primary" onClick={() => { firebase.follow(user!.id!, profile!.id!); setFollowing(true) }}>Seguir</IonButton>
-                                    )}
-                                    {following && (
-                                        <IonButton className={styles.lightButton} fill="outline" expand="block" onClick={() => { firebase.unfollow(user!.id!, profile!.id!); setFollowing(false) }}>Siguiendo</IonButton>
-                                    )}
-                                </IonCol>
-
-                                <IonCol size="5">
-                                    <IonButton className={styles.lightButton} fill="outline" expand="block">Enviar mensaje</IonButton>
-                                </IonCol>
-
-                                <IonCol size="2">
-                                    <IonButton className={styles.lightButton} fill="outline">
-                                        <IonIcon icon={chevronDown} />
-                                    </IonButton>
-                                </IonCol>
-                            </IonRow>
-                        }
-
+                        <IonRow className={styles.profileActions}>
+                            <IonCol size="5">
+                                {!following && (
+                                    <IonButton expand="block" color="primary" onClick={() => { firebase.follow(user!.id!, profile!.id!); setFollowing(true) }}>Seguir</IonButton>
+                                )}
+                                {following && (
+                                    <IonButton className={styles.lightButton} fill="outline" expand="block" onClick={() => { firebase.unfollow(user!.id!, profile!.id!); setFollowing(false) }}>Siguiendo</IonButton>
+                                )}
+                            </IonCol>
+                            <IonCol size="5">
+                                <IonButton className={styles.lightButton} fill="outline" expand="block">Enviar mensaje</IonButton>
+                            </IonCol>
+                            <IonCol size="2">
+                                <IonButton className={styles.lightButton} fill="outline">
+                                    <IonIcon icon={chevronDown} />
+                                </IonButton>
+                            </IonCol>
+                        </IonRow>
+                        
                     </IonGrid>
 
                     <IonRow className="ion-text-center ion-justify-content-center ion-align-items-center ion-align-self-center">
