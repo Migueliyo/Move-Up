@@ -1,0 +1,15 @@
+.parrafo-info{
+    text-align: center;
+    font-size: 12px;
+    color: #8c8c8c;
+}
+
+.ionSegment {
+    margin-bottom: 0.1rem;
+}
+
+.customSegment {
+    --color: black;
+    --indicator-color: black;
+    color: black;
+}
