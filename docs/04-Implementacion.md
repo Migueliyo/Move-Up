@@ -174,3 +174,13 @@ export default defineConfig({
   }
 });
 ```
+
+## Reglas Cloud Firestore y Storage
+
+Para lanzar tu proyecto en modo producción en Firebase, deben de haber unas reglas que se deben configurar sobre qué y quienes pueden leer y escribir datos. En el caso de aplicación, para su uso, se necesitaba un logueo previo por lo que estas reglas en sí en *modo de pruebas* (modo en el que todos pueden leer y escribir datos) no tenían mucha repercusión. Pero lo ideal, tal y como debe de hacerse, es definiendo una serie de reglas que, en mi caso, es que para escribir y leer los datos de mi aplicación solo lo podrán hacer los que se hayan logueado contra la autenticación de firebase, también usada en mi aplicación. 
+
+![Captura de las reglas de Cloud Firestore](/docs/media/firestore.png)
+
+Al igual que en Cloud Firestore, para utilizar el Storage de Firebase pasa exactámente lo mismo. Para su uso se deben definir una serie de reglas. En el caso de mi aplicación, utilizo el Storage de Firebase para almacenar todo el contenido que se sube y alojarlo en una url que después consumo. Tal y como definí anteriormente que solo los usuarios logueados pudieran leer y escribir los datos, en este caso hice lo mismo.
+
+![Captura de las reglas de Cloud Firestore](/docs/media/storage.png)
