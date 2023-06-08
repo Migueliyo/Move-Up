@@ -229,25 +229,24 @@ const getPostsFromIdUser = async (userId: string): Promise<FirebaseResponse> => 
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const userDocSnap = await getDoc(userDocRef);
-    const userData = userDocSnap.data();
+    
+    if (userDocSnap.exists()) {
+      const postsArray = userDocSnap.data().posts;
+      const postsData = [];
 
-    // Obtener las referencias a los posts del usuario
-    const postRefs = userData?.posts || [];
-
-    // Obtener los datos de los posts utilizando las referencias
-    const postPromises = postRefs.map(async (postRef: any) => {
-      const postDocSnap = await getDoc(postRef);
-      const postData = postDocSnap.data();
-      return postData;
-    });
-
-    // Esperar a que se completen todas las promesas de los posts
-    const posts = await Promise.all(postPromises);
-
-    return {
-      data: posts,
-      error: false,
-    };
+      for (const postRef of postsArray) {
+        const postDocSnapshot = await getDoc(postRef);
+        if (postDocSnapshot.exists()) {
+          postsData.push({id: postDocSnapshot.id, ...(postDocSnapshot.data() || {})});
+        }
+      }
+      return {
+        data: postsData,
+        error: false,
+      };
+    } else {
+      throw new Error("El post no existe");
+    }
   } catch (e) {
     console.log(e);
     return {
@@ -375,7 +374,7 @@ const getLikes = async (postId: string): Promise<FirebaseResponse> => {
       for (const likeRef of likesArray) {
         const likeDocSnapshot = await getDoc(likeRef);
         if (likeDocSnapshot.exists()) {
-          likesData.push(likeDocSnapshot.data());
+          likesData.push({id: likeDocSnapshot.id, ...(likeDocSnapshot.data() || {})});
         }
       }
       return {
@@ -456,7 +455,7 @@ const getFollowers = async (userId: string): Promise<FirebaseResponse> => {
         for (const followerRef of userData.followers) {
           const followerDoc = await getDoc(followerRef);
           if (followerDoc.exists()) {
-            followers.push(followerDoc.data());
+            followers.push({id: followerDoc.id, ...(followerDoc.data() || {})});
           }
         }
       }
@@ -488,7 +487,7 @@ const getFollowing = async (userId: string): Promise<FirebaseResponse> => {
         for (const followingRef of userData.following) {
           const followingDoc = await getDoc(followingRef);
           if (followingDoc.exists()) {
-            following.push(followingDoc.data());
+            following.push({id: followingDoc.id, ...(followingDoc.data() || {})});
           }
         }
       }
@@ -560,23 +559,25 @@ const addComment = async (postId: string, userId: string, username: string, avat
 const getCommentsFromIdPost = async (postId: string): Promise<FirebaseResponse> => {
   try {
     const postDocRef = doc(db, POSTS_COLLECTION, postId);
-    const postDocSnap = await getDoc(postDocRef);
-    const postData = postDocSnap.data();
-
-    const postComments = postData?.comments || [];
-
-    const postPromises = postComments.map(async (comment: any) => {
-      const commentDocSnap = await getDoc(comment);
-      const commentData = commentDocSnap.data();
-      return commentData;
-    });
-
-    const comments = await Promise.all(postPromises);
-
-    return {
-      data: comments,
-      error: false,
-    };
+    const postDoc = await getDoc(postDocRef);
+    if (postDoc.exists()) {
+      const postData = postDoc.data();
+      const comments = [];
+      if (postData.comments){
+        for (const commentRef of postData.comments){
+          const commentDoc = await getDoc(commentRef);
+          if (commentDoc.exists()){
+            comments.push({id: commentDoc.id, ...(commentDoc.data() || {})})
+          }
+        }
+      }
+      return {
+        data: comments,
+        error: false,
+      };
+    } else {
+      throw new Error("El post no existe");
+    }
   } catch (e) {
     console.log(e);
     return {
