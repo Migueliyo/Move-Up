@@ -1,5 +1,7 @@
 import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+
 import ExploreContainer from '../components/ExploreContainer';
+
 import './Challenge.css';
 
 const Challenge= () => {
@@ -8,7 +10,7 @@ const Challenge= () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Desafíos</IonTitle>
+          <p className='div'>Desafíos</p>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>

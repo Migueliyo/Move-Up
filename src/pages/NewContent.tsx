@@ -14,13 +14,11 @@ import './NewContent.css';
 const NewContent: React.FC = () => {
 
   const history = useHistory();
-  const { photo, setPhoto, takePhotoFromCamera } = usePhotoGallery();
+  const { photo, setPhoto, takePhotoFromCamera, error, setError } = usePhotoGallery();
   const { user } = useAuth();
   const [resetFields, setResetFields] = useState(false);
   const [titleInput, setTitleInput] = useState('');
   const refTitle = useRef<HTMLIonInputElement>();
-  const [error, setError] = useState(false);
-  const [errorAlert, setErrorAlert] = useState<string | undefined>(undefined);
 
   const handleResetFields = () => {
     setResetFields(true);
@@ -28,30 +26,20 @@ const NewContent: React.FC = () => {
   };
 
   const handlePublish = async () => {
-    try {
-      const titleInput = refTitle.current?.value as string;
-      const response = await firebase.addPost(photo!, user!.id!, titleInput, user!.username, user!.avatar);
-      if (!response.error){
-        history.push('/home');
-        setResetFields(true); 
-        setPhoto(undefined);
-      }
-    } catch (e:any) {
-      setError(true);
-      setErrorAlert(e.message);
+    const titleInput = refTitle.current?.value as string;
+    const response = await firebase.addPost(photo!, user!.id!, titleInput, user!.username, user!.avatar);
+    if (!response.error){
+      history.push('/home');
+      setResetFields(true); 
+      setPhoto(undefined);
     }
-  };
-
-  const handleAlertDismiss = () => {
-    setErrorAlert(undefined);
-    setError(false);
   };
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Publicar contenido</IonTitle>
+          <p className='div'>Publicar contenido</p>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -62,7 +50,7 @@ const NewContent: React.FC = () => {
           </IonCardHeader>
 
           <IonCardContent>
-          <img className='img' alt="Gallery Image" src={photo ? photo.webviewPath : 'assets/gallery.png'} />
+          <img className='img' alt="Gallery Image" src={error ? 'assets/gallery.png' : (photo ? photo.webviewPath : 'assets/gallery.png')} />
             {resetFields ? (
               <>
                 <IonInput
@@ -70,7 +58,6 @@ const NewContent: React.FC = () => {
                   placeholder="Escribe un pie de foto"
                   label="Pie de foto"
                   onIonChange={handleResetFields}
-                  value=""
                 ></IonInput>
                 {setResetFields(false)}
               </>
@@ -96,9 +83,8 @@ const NewContent: React.FC = () => {
         <IonAlert
           isOpen={error}
           header="Error"
-          message={errorAlert}
+          message="La imagen es demasiado pequeña"
           buttons={["OK"]}
-          onDidDismiss={handleAlertDismiss}
         />
 
       </IonContent>

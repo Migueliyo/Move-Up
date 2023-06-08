@@ -11,8 +11,7 @@ import {
   getDocs,
   addDoc,
   query,
-  where,
-  FieldValue
+  where
 } from "firebase/firestore";
 import {
   getDownloadURL,
@@ -214,6 +213,24 @@ const getPosts = async (): Promise<FirebaseResponse> => {
     }));
     return {
       data: postsList,
+      error: false,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
+const getPost = async (postId: string): Promise<FirebaseResponse> => {
+  try {
+    const postDocRef = doc(db, POSTS_COLLECTION, postId);
+    const postDoc = await getDoc(postDocRef);
+    const post = {id: postDoc.id, ...postDoc.data()};
+    return {
+      data: post,
       error: false,
     };
   } catch (e) {
@@ -603,6 +620,7 @@ const firebase = {
   auth,
   getUser,
   getPosts,
+  getPost,
   addPost,
   addLike,
   deleteLike,

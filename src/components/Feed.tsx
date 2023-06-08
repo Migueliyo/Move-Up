@@ -1,23 +1,26 @@
-import { useEffect, useContext } from "react";
+import { useEffect, useContext, useState } from "react";
 
 import { IonAvatar, IonIcon, IonRouterLink } from "@ionic/react";
 import { addCircleOutline, bookmarkOutline, chatbubbleOutline, ellipsisVertical, heart, heartOutline, paperPlaneOutline } from "ionicons/icons";
 
 import { useAuth } from "../auth/AuthProvider";
 import { Post } from "../model/post";
+import {LikedContext, LikedContextType } from "../context/LikedContext";
 
 import TimeDifference from "./TimeDifference";
 import firebase from "../firebase/firebase";
+import Comments from "./Comments";
 
 import styles from "./Feed.module.scss";
-import {LikedContext, LikedContextType,  } from "../context/LikedContext";
 
-const Feed = (props: { posts: any; }) => {
 
-    const { posts } = props;
+const Feed = (props: any) => {
+
+    const { posts, clickedSegment, setClickedSegment } = props;
     const { user } = useAuth();
 
     const [liked, setLiked] = useContext<LikedContextType>(LikedContext);
+    const [postId, setPostId] = useState('');
 
     const checkLikes = async () => {
         const likesArrayPromises = posts.map((post: Post) =>
@@ -68,12 +71,13 @@ const Feed = (props: { posts: any; }) => {
         }, 850);
     };
       
-
     // Ordena los posts según el tiempo de subida
     const sortedPosts = posts.sort((a: any, b: any) => b.time - a.time);
 
     return (
-        
+        (clickedSegment === 'comentarios') ? (
+            <Comments postId={postId}/>
+        ) : (
         <div className={ styles.postsContainer }>
             { sortedPosts.map( (post: Post, index: number) => {         
                 return (
@@ -98,14 +102,15 @@ const Feed = (props: { posts: any; }) => {
                             </div>
                         </div>
 
-                        <div className={ styles.postImage } style={{ backgroundImage: `url(${ post.image })`, backgroundPosition: "center, center", backgroundSize: "contain"}}>
+                        <div className={ styles.postImage }>
+                            <img src={post.image} alt={post.caption}></img>
                             <IonIcon id={ `postLike_${ post.id }`} className={ `animated__animated animate__heartBeat ${ styles.postImageLike }` } icon={ heart } color="light" />
                         </div>
 
                         <div className={ styles.postActionsContainer }>
                             <div className={ styles.postActions }>
                                 <IonIcon className="animate__animated" color={ liked[index] ? "danger" : "dark" } icon={ liked[index] ? heart : heartOutline } onClick={ e => likePost(e, post.id!, user!.id!) } />
-                                <IonIcon icon={ chatbubbleOutline } />
+                                <IonIcon onClick={()=>{setClickedSegment('comentarios'); setPostId(post.id!)}} icon={ chatbubbleOutline } />
                                 <IonIcon icon={ paperPlaneOutline } />
                             </div>
 
@@ -126,7 +131,7 @@ const Feed = (props: { posts: any; }) => {
                                 </span> { post.caption }</p>
                         </div>
 
-                        <div className={ styles.postComments }>
+                        <div className={ styles.postComments } onClick={()=>{setClickedSegment('comentarios'); setPostId(post.id!)}}>
                             <p>Ver los { post.comments.length } comentarios</p>
                         </div>
 
@@ -135,7 +140,7 @@ const Feed = (props: { posts: any; }) => {
                                 <IonAvatar>
                                     <img alt="add comment avatar" src={ user?.avatar } />
                                 </IonAvatar>
-                                <p className="ion-margin-left">Añadir un comentario...</p>
+                                <p className="ion-margin-left" onClick={()=>{setClickedSegment('comentarios'); setPostId(post.id!)}}>Añadir un comentario...</p>
                             </div>
 
                             <div className={ styles.postAddCommentActions }>
@@ -150,8 +155,10 @@ const Feed = (props: { posts: any; }) => {
                     </div>
                 );
             })}
-        </div>  
+        </div>
+        )
     );
+    
 }
 
 export default Feed;

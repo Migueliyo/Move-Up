@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
 
-import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonToolbar, RefresherEventDetail } from '@ionic/react';
-import { addCircleOutline, heartOutline, logOutOutline, paperPlaneOutline } from 'ionicons/icons';
+import { IonBackButton, IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonToolbar, RefresherEventDetail } from '@ionic/react';
+import { addCircleOutline, arrowBackOutline, heartOutline, logOutOutline, paperPlaneOutline } from 'ionicons/icons';
 
 import { FirebaseResponse } from '../model/response';
 import { LikedProvider } from '../context/LikedContext';
@@ -15,6 +15,7 @@ const Home = () => {
 
 	const [users, setUsers] = useState([]);
 	const [posts, setPosts] = useState([]);
+	const [clickedSegment, setClickedSegment] = useState('');
 	const location = useLocation();
 
 	const getUsers = async () => {
@@ -53,29 +54,45 @@ const Home = () => {
 
 	return (
 		<IonPage>
+
 			<IonHeader>
 				<IonToolbar>
-					<IonButtons slot="start">
-						<img alt="main logo" src="/assets/logo.png" style={{ width: "7rem" }} />
-					</IonButtons>
+					{(clickedSegment === 'comentarios') ?
+						(<IonButtons slot="start">
+							<IonButton color="dark" onClick={() => { setClickedSegment('') }}>
+								<IonIcon icon={arrowBackOutline} />
+							</IonButton>
+							<p className='toolbar'>
+								Comentarios
+							</p>
+						</IonButtons>
+						)
+						:
+						(
+							<>
+								<IonButtons slot="start">
+									<img alt="main logo" src="/assets/logo.png" style={{ width: "7rem" }} />
+								</IonButtons>
 
-					<IonButtons slot="end">
-						<IonButton color="dark">
-							<IonIcon icon={addCircleOutline} />
-						</IonButton>
-						<IonButton color="dark">
-							<IonIcon icon={heartOutline} />
-						</IonButton>
+								<IonButtons slot="end">
+									<IonButton color="dark">
+										<IonIcon icon={addCircleOutline} />
+									</IonButton>
+									<IonButton color="dark">
+										<IonIcon icon={heartOutline} />
+									</IonButton>
 
-						<IonButton color="dark">
-							<IonIcon icon={paperPlaneOutline} />
-						</IonButton>
+									<IonButton color="dark">
+										<IonIcon icon={paperPlaneOutline} />
+									</IonButton>
 
-						<IonButton onClick={firebase.logOut}>
-							<IonIcon icon={logOutOutline} />
-						</IonButton>
+									<IonButton onClick={firebase.logOut}>
+										<IonIcon icon={logOutOutline} />
+									</IonButton>
 
-					</IonButtons>
+								</IonButtons>
+							</>
+						)}
 				</IonToolbar>
 			</IonHeader>
 
@@ -83,9 +100,9 @@ const Home = () => {
 				<IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
 					<IonRefresherContent></IonRefresherContent>
 				</IonRefresher>
-				<Stories users={users} />
+				<Stories users={users} clickedSegment={clickedSegment}/>
 				<LikedProvider>
-					<Feed posts={posts} />
+					<Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
 				</LikedProvider>
 
 			</IonContent>

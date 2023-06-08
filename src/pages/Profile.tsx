@@ -192,7 +192,7 @@ const Profile = () => {
                     </IonRow>
 
                     {activeSegment === 'posts' &&
-                        <IonRow className="ion-no-padding ion-no-margin">
+                        <IonRow>
                             {posts && posts.map((post, index) => {
                                 return (
                                     <IonCol className={styles.postCol} key={index} size="4">

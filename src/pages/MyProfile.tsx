@@ -176,7 +176,7 @@ const MyProfile = () => {
                             {posts && posts.map((post, index) => {
                                 return (
                                     <IonCol className={styles.postCol} key={index} size="4">
-                                        <img alt="post" src={post.image} />
+                                        <img alt="post" src={post.image} onClick={()=>{setClickedSegment('publicaciones')}}/>
                                     </IonCol>
                                 );
                             })}

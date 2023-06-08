@@ -10,3 +10,38 @@
 .image {
     border-radius: 500px;
 }
+
+.toolbar-down {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+}
+
+.ion-item {
+    --border-style: none;
+    --inner-border-style: none;
+}
+
+.containerComment {
+    position: relative;
+    left: 0;
+    right: 0;
+    top: 10%;
+    font-size: 15px;
+}
+  
+.containerComment p {
+    font-size: 15px;
+    margin-top: 1%;
+}
+
+.comment-content{
+    height: 91%;
+}
+
+.thumbnail-comment{
+    
+}
+  

@@ -2,13 +2,13 @@ import { IonCol, IonRouterLink, IonRow } from "@ionic/react";
 import styles from "./Stories.module.scss";
 import { useAuth } from "../auth/AuthProvider";
 
-const Stories = (props: { users: any; }) => {
+const Stories = (props: any) => {
 
-    const { users } = props;
+    const { users, clickedSegment } = props;
     const { user } = useAuth();
 
     return (
-
+        (clickedSegment !== 'comentarios') ? (
         <IonRow className={ styles.stories }>
 
             <div className={ styles.storiesContainer }>
@@ -26,7 +26,7 @@ const Stories = (props: { users: any; }) => {
                     );
                 })}
             </div>
-        </IonRow>
+        </IonRow>) : (<></>)
     );
 }
 

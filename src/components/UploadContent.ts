@@ -15,13 +15,14 @@ import { UserPhoto } from "../model/userPhoto";
 
 export const usePhotoGallery = () => {
   const [photo, setPhoto] = useState<UserPhoto>();
+  const [error, setError] = useState<boolean>(false);
   const { user } = useAuth();
 
   const savePicture = async (photo: Photo, fileName: string): Promise<UserPhoto> => {
     const isAcceptableSize = await checkImageSize(photo);
 
     if (!isAcceptableSize) {
-      throw new Error("El tamaño de la imagen es demasiado pequeño. Por favor, selecciona una imagen más grande.");
+      setError(true);
     }
 
     let base64Data: string;
@@ -97,6 +98,7 @@ export const usePhotoGallery = () => {
       quality: 100,
     });
 
+    setError(false);
     const fileName = user!.username + '-' + new Date().getTime() + '.jpeg';
     const savedFileImage = await savePicture(photoCamera, fileName);
     loadImage(savedFileImage);
@@ -105,7 +107,9 @@ export const usePhotoGallery = () => {
   return {
     takePhotoFromCamera,
     photo,
-    setPhoto
+    setPhoto,
+    error,
+    setError
   };
 }
 
