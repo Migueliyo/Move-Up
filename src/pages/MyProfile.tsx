@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { IonButton, IonButtons, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonLabel, IonPage, IonRefresher, IonRefresherContent, IonRow, IonSegment, IonSegmentButton, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
+import { IonButton, IonButtons, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonRow, IonSegment, IonSegmentButton, IonToolbar, RefresherEventDetail } from '@ionic/react';
 import { addCircleOutline, arrowBackOutline, bookmarksOutline, chevronDown, gridOutline, menuOutline } from 'ionicons/icons';
 
 import { useAuth } from '../auth/AuthProvider';
@@ -11,6 +11,7 @@ import firebase from '../firebase/firebase';
 import Follow from '../components/Follow';
 
 import styles from './Profile.module.scss';
+import Feed from '../components/Feed';
 
 const MyProfile = () => {
 
@@ -28,7 +29,7 @@ const MyProfile = () => {
 
     const getUser = async (id: string) => {
         const response = await firebase.getUser(id);
-        if (!response.error){
+        if (!response.error) {
             setProfile(response.data);
             setUser(response.data!);
         }
@@ -58,7 +59,7 @@ const MyProfile = () => {
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    {(clickedSegment === 'seguidores' || clickedSegment === 'seguidos') ? (
+                    {clickedSegment === 'seguidores' || clickedSegment === 'seguidos' &&
                         <>
                             <IonButtons slot="start">
                                 <IonButton color="dark" onClick={() => { setClickedSegment('') }}>
@@ -69,9 +70,20 @@ const MyProfile = () => {
                                 </p>
                             </IonButtons>
                         </>
-                    )
-                    :
-                    (
+                    }
+                    {clickedSegment === 'publicaciones' &&
+                        <>
+                            <IonButtons slot="start">
+                                <IonButton color="dark" onClick={() => { setClickedSegment('') }}>
+                                    <IonIcon icon={arrowBackOutline} />
+                                </IonButton>
+                                <p className={styles.username}>
+                                    Publicaciones
+                                </p>
+                            </IonButtons>
+                        </>
+                    }
+                    {clickedSegment === '' &&
                         <>
                             <IonButtons slot="start">
                                 <p className={styles.username}>
@@ -88,13 +100,19 @@ const MyProfile = () => {
                                 </IonButton>
                             </IonButtons>
                         </>
-                    )}
+                    }
                 </IonToolbar>
             </IonHeader>
 
-            {clickedSegment === 'seguidores' || clickedSegment === 'seguidos' ? (
+            {clickedSegment === 'seguidores' || clickedSegment === 'seguidos' &&
                 <Follow clicked={clickedSegment} />
-            ) : (
+            }
+            {clickedSegment === 'publicaciones' &&
+                <IonContent fullscreen>
+                    <Feed posts={posts} />
+                </IonContent>
+            }
+            {clickedSegment === '' &&
                 <IonContent fullscreen>
                     <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
                         <IonRefresherContent></IonRefresherContent>
@@ -176,7 +194,7 @@ const MyProfile = () => {
                             {posts && posts.map((post, index) => {
                                 return (
                                     <IonCol className={styles.postCol} key={index} size="4">
-                                        <img alt="post" src={post.image} onClick={()=>{setClickedSegment('publicaciones')}}/>
+                                        <img alt="post" src={post.image} onClick={() => { setClickedSegment('publicaciones') }} />
                                     </IonCol>
                                 );
                             })}
@@ -184,7 +202,7 @@ const MyProfile = () => {
                     )}
                     {activeSegment === 'saved' && <div></div>}
                 </IonContent>
-            )}
+            }
         </IonPage>
     );
 };

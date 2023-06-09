@@ -35,6 +35,10 @@
     --inner-border-style: none;
 }
 
+.footer-md::before {
+    width: 0;
+}
+
 .containerComment {
     position: relative;
     left: 0;
