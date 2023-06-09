@@ -22,13 +22,24 @@
 .ion-item {
     --border-style: none;
     --inner-border-style: none;
+    display: flex;
+    align-items: flex-start;
+}
+
+.first-ion-item{
+    border-bottom: 1px solid gainsboro;
+}
+
+.ion-item-down {
+    --border-style: none;
+    --inner-border-style: none;
 }
 
 .containerComment {
     position: relative;
     left: 0;
     right: 0;
-    top: 10%;
+    padding-top: 1rem;
     font-size: 15px;
 }
   
@@ -41,7 +52,9 @@
     height: 91%;
 }
 
-.thumbnail-comment{
-    
+.time{
+    font-size: 13px;
+    color: #8c8c8c;
 }
+  
   

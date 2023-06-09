@@ -561,7 +561,7 @@ const addComment = async (postId: string, userId: string, username: string, avat
       comments: arrayUnion(docRef)
     });
     return {
-      data: docRef,
+      data: comment,
       error: false,
     };
   } catch (e) {

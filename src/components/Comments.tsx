@@ -1,22 +1,24 @@
 import { useEffect, useState, useRef } from "react";
 import { useHistory } from "react-router";
 
-import { IonContent, IonFooter, IonIcon, IonInput, IonItem, IonList, IonThumbnail, IonToolbar } from "@ionic/react";
+import { IonContent, IonFooter, IonIcon, IonInput, IonItem, IonList, IonThumbnail } from "@ionic/react";
 import { paperPlane } from "ionicons/icons";
 
 import { Comment } from "../model/comment";
 import { useAuth } from "../auth/AuthProvider";
+import { Post } from "../model/post";
+
 import firebase from "../firebase/firebase";
+import TimeDifferenceComment from "./TimeDifferenceComment";
 
 import './Comments.css'
-import { Post } from "../model/post";
 
 const Comments = (props: { postId: string }) => {
 
     const { postId } = props;
     const { user } = useAuth();
     const history = useHistory();
-    const [comments, setComments] = useState([]);
+    const [comments, setComments] = useState<Comment[]>([]);
     const [post, setPost] = useState<Post>();
     const refComment = useRef<HTMLIonInputElement>();
 
@@ -35,33 +37,44 @@ const Comments = (props: { postId: string }) => {
     useEffect(() => {
         getPost(postId);
         getComments(postId);
-    }, [postId, history]);
+    }, [comments]);
 
     const addComment = async (postId: string, userId: string, username: string, avatar: string) => {
         const comment = refComment.current?.value as string;
-        await firebase.addComment(postId, userId, username, avatar, comment);
+        refComment.current!.value = '';
+        const response = await firebase.addComment(postId, userId, username, avatar, comment);
+        if (!response.error) {
+            setComments(prevComments => [response.data, ...prevComments]);
+        }
     }
+
+    const sortedComments = comments.sort((a: any, b: any) => b.time - a.time);
 
     return (
         <IonContent fullscreen class="comment-content">
             <IonList>
                 <IonItem key={postId} className="ion-item first-ion-item">
                     <IonThumbnail className="thumbnail-comment" slot="start" onClick={() => { history.push("/profile/" + post?.user_id) }}>
-                        <img className="image" alt="Foto de perfil" src={post?.user_avatar} />
+                        <div>
+                            <img className="image" alt="Foto de perfil" src={post?.user_avatar} />
+                        </div>
                     </IonThumbnail>
                     <div className="containerComment">
                         <strong onClick={() => { history.push("/profile/" + post?.user_id) }}>{post?.user_username}</strong>
+                        
                         <p>{post?.caption}</p>
                     </div>
                 </IonItem>
-                {comments.map((comment: Comment) => {
+                
+                {sortedComments.map((comment: Comment, index: number) => {
                     return (
-                        <IonItem key={comment.id} className="ion-item">
+                        <IonItem key={index} className="ion-item">
                             <IonThumbnail className="thumbnail-comment" slot="start" onClick={() => { history.push("/profile/" + comment.user_id) }}>
                                 <img className="image" alt="Foto de perfil" src={comment.user_avatar} />
                             </IonThumbnail>
                             <div className="containerComment">
-                                <strong onClick={() => { history.push("/profile/" + comment.user_id) }}>{comment.user_username}</strong> 
+                                <strong onClick={() => { history.push("/profile/" + comment.user_id) }}>{comment.user_username} </strong>
+                                <span className="time"><TimeDifferenceComment timestamp={comment.time}/></span> 
                                 <p>{comment.comment}</p>
                             </div>
                         </IonItem>
@@ -69,8 +82,8 @@ const Comments = (props: { postId: string }) => {
                 })}
             </IonList>
 
-            <IonFooter>
-                <IonItem className="toolbar-down ion-item" color={"light"}>
+            <IonFooter class="ion-item-down">
+                <IonItem className="toolbar-down ion-item-down" color={"light"}>
                     <IonThumbnail slot="start">
                         <img className="image" alt="Foto de perfil" src={user?.avatar} />
                     </IonThumbnail>

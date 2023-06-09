@@ -1,6 +1,6 @@
 import moment from 'moment';
 
-const TimeDifference = ({ timestamp }: any) => {
+const TimeDifferenceComment = ({ timestamp }: any) => {
   // Obtiene la fecha actual
   const now = moment();
 
@@ -16,19 +16,19 @@ const TimeDifference = ({ timestamp }: any) => {
   // Crea la cadena de tiempo para mostrar
   let timeString;
   if (secondsDifference < 60) {
-    timeString = `Hace ${secondsDifference} segundo${secondsDifference !== 1 ? 's' : ''}`;
+    timeString = `${secondsDifference} s`;
   } else if (minutesDifference < 60) {
-    timeString = `Hace ${minutesDifference} minuto${minutesDifference !== 1 ? 's' : ''}`;
+    timeString = `${minutesDifference} min`;
   } else if (hoursDifference < 24) {
-    timeString = `Hace ${hoursDifference} hora${hoursDifference !== 1 ? 's' : ''}`;
+    timeString = `${hoursDifference} h`;
   } else if (daysDifference < 7) {
-    timeString = `Hace ${daysDifference} día${daysDifference !== 1 ? 's' : ''}`;
+    timeString = `${daysDifference} d`;
   } else {
     const weeksDifference = Math.floor(daysDifference / 7);
-    timeString = `Hace ${weeksDifference} semana${weeksDifference !== 1 ? 's' : ''}`;
+    timeString = `${weeksDifference} sem`;
   }
 
-  return <p>{timeString}</p>;
+  return <>{timeString}</>;
 };
 
-export default TimeDifference;
+export default TimeDifferenceComment;
