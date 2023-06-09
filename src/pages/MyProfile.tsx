@@ -7,11 +7,12 @@ import { useAuth } from '../auth/AuthProvider';
 import { User } from '../model/user';
 import { Post } from '../model/post';
 import firebase from '../firebase/firebase';
+import Feed from '../components/Feed';
 
 import Follow from '../components/Follow';
 
 import styles from './Profile.module.scss';
-import Feed from '../components/Feed';
+
 
 const MyProfile = () => {
 

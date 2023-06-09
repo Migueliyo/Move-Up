@@ -9,6 +9,7 @@ import { Post } from '../model/post';
 import { User } from '../model/user';
 import { RouteParams } from '../model/routeParams';
 import firebase from '../firebase/firebase';
+import Feed from '../components/Feed';
 
 import Follow from '../components/Follow';
 
@@ -75,7 +76,7 @@ const Profile = () => {
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    {(clickedSegment === 'seguidores' || clickedSegment === 'seguidos') ? (
+                {clickedSegment === 'seguidores' || clickedSegment === 'seguidos' &&
                         <>
                             <IonButtons slot="start">
                                 <IonButton color="dark" onClick={() => { setClickedSegment('') }}>
@@ -86,9 +87,20 @@ const Profile = () => {
                                 </p>
                             </IonButtons>
                         </>
-                    )
-                    :
-                    (
+                    }
+                    {clickedSegment === 'publicaciones' &&
+                        <>
+                            <IonButtons slot="start">
+                                <IonButton color="dark" onClick={() => { setClickedSegment('') }}>
+                                    <IonIcon icon={arrowBackOutline} />
+                                </IonButton>
+                                <p className={styles.username}>
+                                    Publicaciones
+                                </p>
+                            </IonButtons>
+                        </>
+                    }
+                    {clickedSegment === '' &&
                         <>
                             <IonButtons slot="start">
                                 <IonBackButton icon={arrowBackOutline} color="dark" />
@@ -102,13 +114,19 @@ const Profile = () => {
                                 </IonButton>
                             </IonButtons>
                         </>
-                    )}
+                    }
                 </IonToolbar>
             </IonHeader>
 
-            {clickedSegment === 'seguidores' || clickedSegment === 'seguidos' ? (
+            {clickedSegment === 'seguidores' || clickedSegment === 'seguidos' &&
                 <Follow clicked={clickedSegment} />
-            ) : (
+            }
+            {clickedSegment === 'publicaciones' &&
+                <IonContent fullscreen>
+                    <Feed posts={posts} />
+                </IonContent>
+            }
+            {clickedSegment === '' &&
                 <IonContent fullscreen>
                     <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
                         <IonRefresherContent></IonRefresherContent>
@@ -207,7 +225,7 @@ const Profile = () => {
                     }
 
                 </IonContent>
-            )}
+            }
         </IonPage>
     );
 };
