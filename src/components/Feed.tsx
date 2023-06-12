@@ -1,4 +1,4 @@
-import { useEffect, useContext, useState } from "react";
+import { useEffect, useContext, useState, useRef } from "react";
 
 import { IonAvatar, IonContent, IonIcon, IonRouterLink } from "@ionic/react";
 import { addCircleOutline, bookmarkOutline, chatbubbleOutline, ellipsisVertical, heart, heartOutline, paperPlaneOutline } from "ionicons/icons";
@@ -16,11 +16,12 @@ import styles from "./Feed.module.scss";
 
 const Feed = (props: any) => {
 
-    const { posts, clickedSegment, setClickedSegment } = props;
+    const { posts, clickedSegment, setClickedSegment, clickedImage } = props;
     const { user } = useAuth();
 
     const [liked, setLiked] = useContext<LikedContextType>(LikedContext);
     const [postId, setPostId] = useState('');
+    const postsContainerRef = useRef<HTMLDivElement>(null);
 
     const checkLikes = async (posts: Post[]) => {
         const likesArrayPromises = posts.map((post: Post) =>
@@ -34,6 +35,25 @@ const Feed = (props: any) => {
     useEffect(() => {
         checkLikes(posts);
     }, []);
+
+    useEffect(() => {
+        if (clickedImage !== undefined && postsContainerRef.current) {
+            const postElement = postsContainerRef.current.querySelector(
+                `#${clickedImage}`
+            );
+            if (postElement) {
+                postElement.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+        }
+    }, [clickedImage]);
+
+    const scrollToAnchor = (anchorId: string) => {
+        const element = document.getElementById(anchorId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
 
     const likePost = async (event: any, postId: string, userId: string) => {
         event.target.classList.add("animate__heartBeat");
@@ -81,8 +101,7 @@ const Feed = (props: any) => {
             <div className={styles.postsContainer}>
                 {sortedPosts.map((post: Post, index: number) => {
                     return (
-
-                        <div key={index} className={styles.postContainer}>
+                        <div id={`post-${index}`} key={index} className={styles.postContainer} ref={postsContainerRef}>
                             <div className={styles.postProfile}>
                                 <div className={styles.postProfileInfo}>
 
@@ -120,7 +139,7 @@ const Feed = (props: any) => {
                             </div>
 
                             <div className={styles.postLikesContainer}>
-                                <p>Le gusta a <span className={styles.postLikedName}>alanmontgomery</span> y <span className={styles.postLikedName}>2 personas más</span></p>
+                                <p>Le gusta a <span className={styles.postLikedName}>migueliyo1607</span> y <span className={styles.postLikedName}>2 personas más</span></p>
                             </div>
 
                             <div className={styles.postCaption}>
@@ -152,6 +171,9 @@ const Feed = (props: any) => {
                             <div className={styles.postTime}>
                                 <TimeDifference timestamp={post.time} />
                             </div>
+                            <a href={`#${postAnchorId}`} className={styles.postLink}>
+                                Ver post
+                            </a>
                         </div>
                     );
                 })}

@@ -21,6 +21,7 @@ const MyProfile = () => {
     const [posts, setPosts] = useState<Post[]>();
     const [activeSegment, setActiveSegment] = useState('posts');
     const [clickedSegment, setClickedSegment] = useState('');
+    const [clickedImage, setClickedImage] = useState('');
 
     const getPostFromIdUser = async (id: string) => {
         const response = await firebase.getPostsFromIdUser(id);
@@ -110,7 +111,7 @@ const MyProfile = () => {
             }
             {clickedSegment === 'publicaciones' &&
                 <IonContent fullscreen>
-                    <Feed posts={posts} />
+                    <Feed posts={posts} clickedImage={clickedImage} />
                 </IonContent>
             }
             {clickedSegment === '' &&
@@ -195,7 +196,7 @@ const MyProfile = () => {
                             {posts && posts.map((post, index) => {
                                 return (
                                     <IonCol className={styles.postCol} key={index} size="4">
-                                        <img alt="post" src={post.image} onClick={() => { setClickedSegment('publicaciones') }} />
+                                        <img key={index} alt="post" src={post.image} onClick={() => { setClickedSegment('publicaciones'); setClickedImage(`post-${index}`) }} />
                                     </IonCol>
                                 );
                             })}
