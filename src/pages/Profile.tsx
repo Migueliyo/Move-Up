@@ -21,7 +21,7 @@ const Profile = () => {
     const history = useHistory();
     const { user } = useAuth();
     const [profile, setProfile] = useState<User>();
-    const [posts, setPosts] = useState<Post[]>();
+    const [posts, setPosts] = useState<Post[]>([]);
     const params = useParams<RouteParams>();
     const [profileID, setProfileID] = useState<string>(params.id);
     const [following, setFollowing] = useState<boolean>();
@@ -71,6 +71,8 @@ const Profile = () => {
     const handleSegmentChange = (segmentValue: any) => {
         setActiveSegment(segmentValue);
     };
+
+    const sortedPosts = posts.sort((a: any, b: any) => b.time - a.time);
 
     return (
         <IonPage>
@@ -211,7 +213,7 @@ const Profile = () => {
 
                     {activeSegment === 'posts' &&
                         <IonRow>
-                            {posts && posts.map((post, index) => {
+                            {sortedPosts && sortedPosts.map((post, index) => {
                                 return (
                                     <IonCol className={styles.postCol} key={index} size="4">
                                         <img alt="post" src={post.image} />

@@ -18,7 +18,7 @@ const MyProfile = () => {
 
     const { user, setUser } = useAuth();
     const [profile, setProfile] = useState<User>();
-    const [posts, setPosts] = useState<Post[]>();
+    const [posts, setPosts] = useState<Post[]>([]);
     const [activeSegment, setActiveSegment] = useState('posts');
     const [clickedSegment, setClickedSegment] = useState('');
     const [clickedImage, setClickedImage] = useState('');
@@ -56,6 +56,8 @@ const MyProfile = () => {
     const handleSegmentChange = (segmentValue: any) => {
         setActiveSegment(segmentValue);
     };
+
+    const sortedPosts = posts.sort((a: any, b: any) => b.time - a.time);
 
     return (
         <IonPage>
@@ -193,7 +195,7 @@ const MyProfile = () => {
 
                     {activeSegment === 'posts' && (
                         <IonRow className="ion-no-padding ion-no-margin">
-                            {posts && posts.map((post, index) => {
+                            {sortedPosts && sortedPosts.map((post, index) => {
                                 return (
                                     <IonCol className={styles.postCol} key={index} size="4">
                                         <img key={index} alt="post" src={post.image} onClick={() => { setClickedSegment('publicaciones'); setClickedImage(`post-${index}`) }} />

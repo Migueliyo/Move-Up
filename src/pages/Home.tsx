@@ -8,24 +8,13 @@ import { FirebaseResponse } from '../model/response';
 import { LikedProvider } from '../context/LikedContext';
 
 import Feed from '../components/Feed';
-import Stories from '../components/Stories';
 import firebase from '../firebase/firebase';
 
 const Home = () => {
 
-	const [users, setUsers] = useState([]);
 	const [posts, setPosts] = useState([]);
 	const [clickedSegment, setClickedSegment] = useState('');
 	const location = useLocation();
-
-	const getUsers = async () => {
-		const response: FirebaseResponse = await firebase.getUsers();
-		if (!response.error) {
-			setUsers(response.data);
-		} else {
-			console.log(response.error);
-		}
-	}
 
 	const getPosts = async () => {
 		const response: FirebaseResponse = await firebase.getPosts();
@@ -38,7 +27,6 @@ const Home = () => {
 
 	useEffect(
 		() => {
-			getUsers();
 			getPosts();
 		}, [location.key]
 	)
@@ -47,7 +35,6 @@ const Home = () => {
 		setTimeout(() => {
 			// Any calls to load data go here
 			event.detail.complete();
-			getUsers();
 			getPosts();
 		}, 2000);
 	}
@@ -100,7 +87,6 @@ const Home = () => {
 				<IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
 					<IonRefresherContent></IonRefresherContent>
 				</IonRefresher>
-				<Stories users={users} clickedSegment={clickedSegment}/>
 				<LikedProvider>
 					<Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
 				</LikedProvider>

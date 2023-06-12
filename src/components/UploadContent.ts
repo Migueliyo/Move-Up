@@ -96,6 +96,7 @@ export const usePhotoGallery = () => {
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
       quality: 100,
+      allowEditing: true
     });
 
     setError(false);

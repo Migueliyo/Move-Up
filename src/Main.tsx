@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import { IonApp, IonIcon, IonRouterOutlet, IonTabBar, IonTabButton, IonTabs } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { addCircle, addCircleOutline, barbell, barbellOutline, home, homeOutline, search, searchOutline } from 'ionicons/icons';
+import { addCircle, addCircleOutline, home, homeOutline, people, peopleOutline, search, searchOutline } from 'ionicons/icons';
 
 import { useAuth } from './auth/AuthProvider';
 
@@ -12,7 +12,7 @@ import MyProfile from './pages/MyProfile';
 import Profile from './pages/Profile';
 import Search from './pages/Search';
 import NewContent from './pages/NewContent';
-import Challenge from './pages/Challenge';
+import Friends from './pages/Friends';
 
 const Main: React.FC = () => {
   const { user } = useAuth();
@@ -42,8 +42,8 @@ const Main: React.FC = () => {
             <Route exact path="/new">
               <NewContent />
             </Route>
-            <Route path="/challenge">
-              <Challenge />
+            <Route path="/friends">
+              <Friends />
             </Route>
             <Route exact path="/">
               <Redirect to="/home" />
@@ -59,8 +59,8 @@ const Main: React.FC = () => {
             <IonTabButton tab="new" href="/new" onClick={() => handleTabChange('new')}>
               <IonIcon icon={activeTab === 'new' ? addCircle : addCircleOutline} />
             </IonTabButton>
-            <IonTabButton tab="challenge" href="/challenge" onClick={() => handleTabChange('challenge')}>
-              <IonIcon icon={activeTab === 'challenge' ? barbell : barbellOutline} />
+            <IonTabButton tab="friends" href="/friends" onClick={() => handleTabChange('friends')}>
+              <IonIcon icon={activeTab === 'friends' ? people : peopleOutline} />
             </IonTabButton>
             <IonTabButton tab="myprofile" href="/myprofile" onClick={() => handleTabChange('myprofile')}>
               {user && <img style={activeTab === 'myprofile' ? {border: "2px solid black"} : {}}  alt="tab avatar" src={user.avatar} />}

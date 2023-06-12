@@ -203,6 +203,37 @@ const getUser = async (id: string) => {
   }
 };
 
+const getFriendsFromIdUser = async (userId: string): Promise<FirebaseResponse> => {
+  try {
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+    const userDocSnap = await getDoc(userDocRef);
+    
+    if (userDocSnap.exists()) {
+      const followingArray = userDocSnap.data().following;
+      const followingData = [];
+
+      for (const followingRef of followingArray) {
+        const followingDocSnapshot = await getDoc(followingRef);
+        if (followingDocSnapshot.exists()) {
+          followingData.push({id: followingDocSnapshot.id, ...(followingDocSnapshot.data() || {})});
+        }
+      }
+      return {
+        data: followingData,
+        error: false,
+      };
+    } else {
+      throw new Error("El usuario no existe");
+    }
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
 const getPosts = async (): Promise<FirebaseResponse> => {
   try {
     const postsCol = collection(db, POSTS_COLLECTION);
@@ -619,6 +650,7 @@ const firebase = {
   logOut,
   auth,
   getUser,
+  getFriendsFromIdUser,
   getPosts,
   getPost,
   addPost,

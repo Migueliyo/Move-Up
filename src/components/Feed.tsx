@@ -1,6 +1,6 @@
-import { useEffect, useContext, useState, useRef } from "react";
+import { useEffect, useContext, useState } from "react";
 
-import { IonAvatar, IonContent, IonIcon, IonRouterLink } from "@ionic/react";
+import { IonAvatar, IonIcon, IonRouterLink } from "@ionic/react";
 import { addCircleOutline, bookmarkOutline, chatbubbleOutline, ellipsisVertical, heart, heartOutline, paperPlaneOutline } from "ionicons/icons";
 
 import { useAuth } from "../auth/AuthProvider";
@@ -21,7 +21,6 @@ const Feed = (props: any) => {
 
     const [liked, setLiked] = useContext<LikedContextType>(LikedContext);
     const [postId, setPostId] = useState('');
-    const postsContainerRef = useRef<HTMLDivElement>(null);
 
     const checkLikes = async (posts: Post[]) => {
         const likesArrayPromises = posts.map((post: Post) =>
@@ -34,23 +33,15 @@ const Feed = (props: any) => {
 
     useEffect(() => {
         checkLikes(posts);
+        if (clickedImage !== undefined) 
+            scrollToAnchor(clickedImage)
     }, []);
-
-    useEffect(() => {
-        if (clickedImage !== undefined && postsContainerRef.current) {
-            const postElement = postsContainerRef.current.querySelector(
-                `#${clickedImage}`
-            );
-            if (postElement) {
-                postElement.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-        }
-    }, [clickedImage]);
 
     const scrollToAnchor = (anchorId: string) => {
         const element = document.getElementById(anchorId);
         if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
+            console.log(anchorId)
+            element.scrollIntoView({ behavior: 'smooth'});
         }
     };
 
@@ -101,7 +92,7 @@ const Feed = (props: any) => {
             <div className={styles.postsContainer}>
                 {sortedPosts.map((post: Post, index: number) => {
                     return (
-                        <div id={`post-${index}`} key={index} className={styles.postContainer} ref={postsContainerRef}>
+                        <div key={index} className={styles.postContainer} >
                             <div className={styles.postProfile}>
                                 <div className={styles.postProfileInfo}>
 
@@ -171,9 +162,6 @@ const Feed = (props: any) => {
                             <div className={styles.postTime}>
                                 <TimeDifference timestamp={post.time} />
                             </div>
-                            <a href={`#${postAnchorId}`} className={styles.postLink}>
-                                Ver post
-                            </a>
                         </div>
                     );
                 })}

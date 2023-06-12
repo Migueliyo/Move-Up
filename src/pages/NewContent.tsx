@@ -1,7 +1,7 @@
-import { useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useRef, useState, useEffect } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 
-import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import { IonAlert, IonButton, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonContent, IonFab, IonFabButton, IonHeader, IonIcon, IonInput, IonPage, IonTitle, IonToolbar, useIonViewDidEnter, useIonViewWillEnter } from '@ionic/react';
 import { imagesOutline } from 'ionicons/icons';
 
 import { usePhotoGallery } from '../components/UploadContent';
@@ -14,7 +14,7 @@ import './NewContent.css';
 const NewContent: React.FC = () => {
 
   const history = useHistory();
-  const { photo, setPhoto, takePhotoFromCamera, error, setError } = usePhotoGallery();
+  const { photo, setPhoto, takePhotoFromCamera, error } = usePhotoGallery();
   const { user } = useAuth();
   const [resetFields, setResetFields] = useState(false);
   const [titleInput, setTitleInput] = useState('');
@@ -24,6 +24,10 @@ const NewContent: React.FC = () => {
     setResetFields(true);
     setTitleInput('');
   };
+
+  // useIonViewWillEnter(()=>{
+  //   takePhotoFromCamera();
+  // }, []); 
 
   const handlePublish = async () => {
     const titleInput = refTitle.current?.value as string;

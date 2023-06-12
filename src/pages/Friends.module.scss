@@ -1,12 +1,20 @@
-$border: linear-gradient(to bottom, #d82b7e, #f57939);
+$border: linear-gradient(to bottom, #e65aab, #f5ce22, #2d228b, #1d81bb);
 
-.stories {
+.firstDiv{
+
+    font-weight: 600;
+    text-align: left;
+    font-size: 16px;
+    padding-left: 2%;
+}
+
+.friends {
 
     height: fit-content;
     margin-top: -0.7rem;
 }
 
-.storiesContainer {
+.friendsContainer {
 
     overflow-x: scroll;
     overflow-y: hidden;
@@ -16,13 +24,13 @@ $border: linear-gradient(to bottom, #d82b7e, #f57939);
     width: 100%;
 }
 
-.storiesContainer::-webkit-scrollbar {
+.friendsContainer::-webkit-scrollbar {
 
     display: none;
 }
 
-.story,
-.yourStory {
+.friend,
+.yourfriend {
 
     display: flex;
     flex-direction: column;
@@ -34,14 +42,14 @@ $border: linear-gradient(to bottom, #d82b7e, #f57939);
     margin-left: 0.8rem;
 }
 
-.story:first-child,
-.yourStory:first-child {
+.friend:first-child,
+.yourfriend:first-child {
 
     margin-left: 0.75rem;
 }
 
-.story p,
-.yourStory p {
+.friend p,
+.yourfriend p {
 
     text-align: center;
     margin: 0;
@@ -58,8 +66,8 @@ $border: linear-gradient(to bottom, #d82b7e, #f57939);
     margin-top: 5rem;
 }
 
-.story img,
-.yourStory img {
+.friend img,
+.yourfriend img {
 
     height: 4rem !important;
     width: 4rem !important;
@@ -71,12 +79,12 @@ $border: linear-gradient(to bottom, #d82b7e, #f57939);
     object-position: center center;
 }
 
-.yourStory img {
+.yourfriend img {
 
     background:rgb(214, 214, 214);
 }
 
-.storyAdd {
+.friendAdd {
 
     position: absolute;
     color: white;
@@ -97,4 +105,8 @@ $border: linear-gradient(to bottom, #d82b7e, #f57939);
     right: 0;
     padding: 0.5rem;
     font-size: 0.9rem;
+}
+
+.friend.selected {
+    border: 2px solid blue;
 }
