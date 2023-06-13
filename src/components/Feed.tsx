@@ -12,6 +12,7 @@ import firebase from "../firebase/firebase";
 import Comments from "./Comments";
 
 import styles from "./Feed.module.scss";
+import { flushSync } from "react-dom";
 
 
 const Feed = (props: any) => {
@@ -32,16 +33,21 @@ const Feed = (props: any) => {
     };
 
     useEffect(() => {
-        checkLikes(posts);
-        if (clickedImage !== undefined) 
-            scrollToAnchor(clickedImage)
-    }, []);
+        const downloadLikes = async () => {
+            await checkLikes(posts);
+            console.log(clickedImage);
+            if (clickedImage !== undefined) 
+                scrollToAnchor(clickedImage)
+        }
+        downloadLikes();
+    }, [posts]);
 
     const scrollToAnchor = (anchorId: string) => {
         const element = document.getElementById(anchorId);
+        console.log(element)
         if (element) {
             console.log(anchorId)
-            element.scrollIntoView({ behavior: 'smooth'});
+            setTimeout(()=>{element.scrollIntoView({block: "nearest", behavior: 'smooth'});}, 777); 
         }
     };
 
@@ -92,7 +98,7 @@ const Feed = (props: any) => {
             <div className={styles.postsContainer}>
                 {sortedPosts.map((post: Post, index: number) => {
                     return (
-                        <div key={index} className={styles.postContainer} >
+                        <div id={`post-${index}`} key={index} className={styles.postContainer} >
                             <div className={styles.postProfile}>
                                 <div className={styles.postProfileInfo}>
 

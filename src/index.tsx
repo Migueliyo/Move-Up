@@ -7,11 +7,9 @@ import { defineCustomElements } from '@ionic/pwa-elements/loader';
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
-  <React.StrictMode>
     <AuthProvider>
       <App />
     </AuthProvider>
-  </React.StrictMode>
 );
 
 // Call the element loader after the platform has been bootstrapped
