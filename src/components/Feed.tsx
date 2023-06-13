@@ -1,5 +1,4 @@
-import { useEffect, useContext, useState } from "react";
-import { flushSync } from "react-dom";
+import { useEffect, useContext, useState, useRef } from "react";
 
 import { IonAvatar, IonIcon, IonRouterLink } from "@ionic/react";
 import { addCircleOutline, bookmarkOutline, chatbubbleOutline, ellipsisVertical, heart, heartOutline, paperPlaneOutline } from "ionicons/icons";
@@ -22,6 +21,7 @@ const Feed = (props: any) => {
 
     const [liked, setLiked] = useContext<LikedContextType>(LikedContext);
     const [postId, setPostId] = useState('');
+    const ref = useRef<HTMLDivElement>(null);
 
     const checkLikes = async (posts: Post[]) => {
         const likesArrayPromises = posts.map((post: Post) =>
@@ -33,21 +33,12 @@ const Feed = (props: any) => {
     };
 
     useEffect(() => {
-        const downloadLikes = async () => {
+        const dowloand = async () => {
             await checkLikes(posts);
-            if (clickedImage !== undefined) 
-                scrollToAnchor(clickedImage)
+            ref.current?.scrollIntoView({ behavior: "smooth", block: "start"});
         }
-        downloadLikes();
-    }, [posts]);
-
-    const scrollToAnchor = (anchorId: string) => {
-        const element = document.getElementById(anchorId);
-        if (element) {
-            setTimeout(()=>{element.scrollIntoView({behavior: 'smooth'});}, 777); 
-        }
-    };
-
+        dowloand();
+    }, [posts, clickedImage]);
 
     const likePost = async (event: any, postId: string, userId: string) => {
         event.target.classList.add("animate__heartBeat");
@@ -91,7 +82,7 @@ const Feed = (props: any) => {
     return (
         (clickedSegment === 'comentarios') ? (
             <Comments postId={postId} />
-        ) : (
+        ) : ( 
             <div className={styles.postsContainer}>
                 {sortedPosts.map((post: Post, index: number) => {
                     return (
@@ -149,7 +140,7 @@ const Feed = (props: any) => {
                             </div>
 
                             <div className={styles.postAddComment}>
-                                <div className={styles.postAddCommentProfile}>
+                                <div className={styles.postAddCommentProfile} ref={`post-${index+1}` === clickedImage ? ref : null}>
                                     <IonAvatar>
                                         <img alt="add comment avatar" src={user?.avatar} />
                                     </IonAvatar>

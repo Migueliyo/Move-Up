@@ -25,9 +25,9 @@ const NewContent: React.FC = () => {
     setTitleInput('');
   };
 
-  // useIonViewWillEnter(()=>{
-  //   takePhotoFromCamera();
-  // }, []); 
+  useIonViewWillEnter(()=>{
+    takePhotoFromCamera();
+  }, []); 
 
   const handlePublish = async () => {
     const titleInput = refTitle.current?.value as string;
