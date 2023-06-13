@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { IonCol, IonContent, IonHeader, IonPage, IonRefresher, IonRefresherContent, IonRouterLink, IonRow, IonTitle, IonToolbar, RefresherEventDetail } from '@ionic/react';
+import { IonButton, IonButtons, IonCol, IonContent, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonRouterLink, IonRow, IonTitle, IonToolbar, RefresherEventDetail } from '@ionic/react';
 
 import { FirebaseResponse } from '../model/response';
 import firebase from '../firebase/firebase';
@@ -12,6 +12,7 @@ import { User } from '../model/user';
 import styles from "./Friends.module.scss";
 import Feed from '../components/Feed';
 import { Post } from '../model/post';
+import { arrowBackOutline } from 'ionicons/icons';
 
 const Friends = () => {
 
@@ -20,6 +21,7 @@ const Friends = () => {
   const [friends, setFriends] = useState<User[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedColIndex, setSelectedColIndex] = useState<number | null>(null);
+  const [clickedSegment, setClickedSegment] = useState('');
 
   const getFriends = async (id: string) => {
     const response: FirebaseResponse = await firebase.getFriendsFromIdUser(id);
@@ -69,23 +71,41 @@ const Friends = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <p className={styles.firstDiv}>Amigos</p>
+        {(clickedSegment === 'comentarios') ?
+						(
+            <IonButtons slot="start">
+							<IonButton color="dark" onClick={() => { setClickedSegment('') }}>
+								<IonIcon icon={arrowBackOutline} />
+							</IonButton>
+							<p className='toolbar'>
+								Comentarios
+							</p>
+						</IonButtons>
+						)
+						:
+						(          
+              <p className={styles.firstDiv}>Amigos</p>
+						)}
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
           <IonRefresherContent></IonRefresherContent>
         </IonRefresher>
+        {(clickedSegment !== 'comentarios') ? (
         <IonRow className={styles.friends}>
           <div className={styles.friendsContainer}>
             {friends.map((friend: User, index: number) => {
               return (
-                <IonCol key={index} className={`${index === 0 ? styles.yourfriend : styles.friend} ${selectedColIndex === index ? styles.selected : ''}`}
+                <IonCol key={index} className={`${index === 0 ? styles.friend : styles.friend} ${selectedColIndex === index ? styles.selected : ''}`}
                 onClick={() => {
                   if (selectedColIndex === index){
                     setSelectedColIndex(null);
                     getPosts();
-                  }  
+                  } else if (index === 0) {
+                    setSelectedColIndex(index);
+                    getPostByFriend(user!.id!);
+                  }
                   else {
                     setSelectedColIndex(index);
                     getPostByFriend(friend.id!)
@@ -95,15 +115,15 @@ const Friends = () => {
                   <img alt="friend avatar" src={index === 0 ? user?.avatar : friend.avatar} />
                   {index === 0 && <div className={styles.friendAdd}>+</div>}
 
-                  <p>{index === 0 ? "Tus publicaciones" : friend.username}</p>
+                  <p>{index === 0 ? "Tus posts" : friend.username}</p>
 
                 </IonCol>
               );
             })}
           </div>
-        </IonRow>
+        </IonRow>) : (<></>)}
 
-        <Feed posts={posts} />
+        <Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
 
       </IonContent>
     </IonPage>

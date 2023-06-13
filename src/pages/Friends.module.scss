@@ -9,7 +9,7 @@ $border: linear-gradient(to bottom, #e65aab, #f5ce22, #2d228b, #1d81bb);
 }
 
 .friends {
-
+    
     height: fit-content;
     margin-top: -0.7rem;
 }
@@ -108,5 +108,18 @@ $border: linear-gradient(to bottom, #e65aab, #f5ce22, #2d228b, #1d81bb);
 }
 
 .friend.selected {
-    border: 2px solid blue;
+    position: relative;
+}
+  
+.friend.selected::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -5px;
+    right: -5px;
+    bottom: 0;
+    background-color: rgba(27, 203, 235, 0.3);
+    z-index: 1;
+    transition: box-shadow 0.3s ease-in-out;
+    
 }
