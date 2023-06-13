@@ -5,6 +5,7 @@ import { IonBackButton, IonButton, IonButtons, IonCardSubtitle, IonCardTitle, Io
 import { arrowBackOutline, bookmarksOutline, chevronDown, ellipsisVertical, gridOutline, menuOutline } from 'ionicons/icons';
 
 import { useAuth } from '../auth/AuthProvider';
+import { LikedProvider } from '../context/LikedContext';
 import { Post } from '../model/post';
 import { User } from '../model/user';
 import { RouteParams } from '../model/routeParams';
@@ -125,7 +126,9 @@ const Profile = () => {
             }
             {clickedSegment === 'publicaciones' &&
                 <IonContent fullscreen>
-                    <Feed posts={posts} />
+                    <LikedProvider>
+                        <Feed posts={posts} />
+                    </LikedProvider>
                 </IonContent>
             }
             {clickedSegment === '' &&

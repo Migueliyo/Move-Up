@@ -13,6 +13,7 @@ import styles from "./Friends.module.scss";
 import Feed from '../components/Feed';
 import { Post } from '../model/post';
 import { arrowBackOutline } from 'ionicons/icons';
+import { LikedProvider } from '../context/LikedContext';
 
 const Friends = () => {
 
@@ -122,9 +123,9 @@ const Friends = () => {
             })}
           </div>
         </IonRow>) : (<></>)}
-
-        <Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
-
+        <LikedProvider>
+          <Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
+        </LikedProvider>
       </IonContent>
     </IonPage>
   );

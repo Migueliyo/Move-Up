@@ -1,4 +1,5 @@
 import { useEffect, useContext, useState } from "react";
+import { flushSync } from "react-dom";
 
 import { IonAvatar, IonIcon, IonRouterLink } from "@ionic/react";
 import { addCircleOutline, bookmarkOutline, chatbubbleOutline, ellipsisVertical, heart, heartOutline, paperPlaneOutline } from "ionicons/icons";
@@ -12,7 +13,6 @@ import firebase from "../firebase/firebase";
 import Comments from "./Comments";
 
 import styles from "./Feed.module.scss";
-import { flushSync } from "react-dom";
 
 
 const Feed = (props: any) => {
@@ -35,7 +35,6 @@ const Feed = (props: any) => {
     useEffect(() => {
         const downloadLikes = async () => {
             await checkLikes(posts);
-            console.log(clickedImage);
             if (clickedImage !== undefined) 
                 scrollToAnchor(clickedImage)
         }
@@ -44,10 +43,8 @@ const Feed = (props: any) => {
 
     const scrollToAnchor = (anchorId: string) => {
         const element = document.getElementById(anchorId);
-        console.log(element)
         if (element) {
-            console.log(anchorId)
-            setTimeout(()=>{element.scrollIntoView({block: "nearest", behavior: 'smooth'});}, 777); 
+            setTimeout(()=>{element.scrollIntoView({behavior: 'smooth'});}, 777); 
         }
     };
 
@@ -118,8 +115,8 @@ const Feed = (props: any) => {
                                 </div>
                             </div>
 
-                            <div className={styles.postImage}>
-                                <img src={post.image} alt={post.caption}></img>
+                            <div className={styles.postImage} >
+                                <img src={post.image} alt={post.caption} ></img>
                                 <IonIcon id={`postLike_${post.id}`} className={`animated__animated animate__heartBeat ${styles.postImageLike}`} icon={heart} color="light" />
                             </div>
 
@@ -136,7 +133,7 @@ const Feed = (props: any) => {
                             </div>
 
                             <div className={styles.postLikesContainer}>
-                                <p>Le gusta a <span className={styles.postLikedName}>migueliyo1607</span> y <span className={styles.postLikedName}>2 personas más</span></p>
+                                <p>Le gusta a <span className={styles.postLikedName}>migueliyo1607</span> y <span className={styles.postLikedName}>{post.likes.length > 0 ? post.likes.length - 1 : post.likes.length} personas más</span></p>
                             </div>
 
                             <div className={styles.postCaption}>
@@ -172,7 +169,6 @@ const Feed = (props: any) => {
                     );
                 })}
             </div>
-
         )
     );
 

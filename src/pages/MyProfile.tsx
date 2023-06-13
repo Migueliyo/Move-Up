@@ -4,6 +4,7 @@ import { IonButton, IonButtons, IonCardSubtitle, IonCardTitle, IonCol, IonConten
 import { addCircleOutline, arrowBackOutline, bookmarksOutline, chevronDown, gridOutline, menuOutline } from 'ionicons/icons';
 
 import { useAuth } from '../auth/AuthProvider';
+import { LikedProvider } from '../context/LikedContext';
 import { User } from '../model/user';
 import { Post } from '../model/post';
 import firebase from '../firebase/firebase';
@@ -113,7 +114,9 @@ const MyProfile = () => {
             }
             {clickedSegment === 'publicaciones' &&
                 <IonContent fullscreen>
-                    <Feed posts={posts} clickedImage={clickedImage} />
+                    <LikedProvider>
+                        <Feed posts={posts} clickedImage={clickedImage} />
+                    </LikedProvider>
                 </IonContent>
             }
             {clickedSegment === '' &&
