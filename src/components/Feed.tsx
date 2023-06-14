@@ -21,7 +21,8 @@ const Feed = (props: any) => {
 
     const [liked, setLiked] = useContext<LikedContextType>(LikedContext);
     const [postId, setPostId] = useState('');
-    const ref = useRef<HTMLDivElement>(null);
+    const refScrollStart = useRef<HTMLDivElement>(null);
+    const refScrollEnd = useRef<HTMLDivElement>(null);
 
     const checkLikes = async (posts: Post[]) => {
         const likesArrayPromises = posts.map((post: Post) =>
@@ -35,7 +36,8 @@ const Feed = (props: any) => {
     useEffect(() => {
         const dowloand = async () => {
             await checkLikes(posts);
-            ref.current?.scrollIntoView({ behavior: "smooth", block: "start"});
+            refScrollStart.current?.scrollIntoView({ behavior: "smooth", block: "start"});
+            refScrollEnd.current?.scrollIntoView({ behavior: "smooth", block: "start"});
         }
         dowloand();
     }, [posts, clickedImage]);
@@ -90,7 +92,7 @@ const Feed = (props: any) => {
                             <div className={styles.postProfile}>
                                 <div className={styles.postProfileInfo}>
 
-                                    <IonRouterLink routerLink={`/profile/${post.user_id}`}>
+                                    <IonRouterLink routerLink={`/profile/${post.user_id}`} >
                                         <IonAvatar>
                                             <img alt="post avatar" src={post?.user_avatar} />
                                         </IonAvatar>
@@ -111,7 +113,7 @@ const Feed = (props: any) => {
                                 <IonIcon id={`postLike_${post.id}`} className={`animated__animated animate__heartBeat ${styles.postImageLike}`} icon={heart} color="light" />
                             </div>
 
-                            <div className={styles.postActionsContainer}>
+                            <div className={styles.postActionsContainer} ref={`post-${index+1}` === clickedImage && `post-${index+1}` === `post-${user!.posts.length-1}` ? refScrollEnd : null}>
                                 <div className={styles.postActions}>
                                     <IonIcon className="animate__animated" color={liked[index] ? "danger" : "dark"} icon={liked[index] ? heart : heartOutline} onClick={e => likePost(e, post.id!, user!.id!)} />
                                     <IonIcon onClick={() => { setClickedSegment('comentarios'); setPostId(post.id!) }} icon={chatbubbleOutline} />
@@ -139,8 +141,8 @@ const Feed = (props: any) => {
                                 <p>Ver los {post.comments.length} comentarios</p>
                             </div>
 
-                            <div className={styles.postAddComment}>
-                                <div className={styles.postAddCommentProfile} ref={`post-${index+1}` === clickedImage ? ref : null}>
+                            <div className={styles.postAddComment} >
+                                <div className={styles.postAddCommentProfile} ref={`post-${index+1}` === clickedImage ? refScrollStart : null}>
                                     <IonAvatar>
                                         <img alt="add comment avatar" src={user?.avatar} />
                                     </IonAvatar>

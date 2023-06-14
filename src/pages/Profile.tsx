@@ -28,6 +28,7 @@ const Profile = () => {
     const [following, setFollowing] = useState<boolean>();
     const [activeSegment, setActiveSegment] = useState('posts');
     const [clickedSegment, setClickedSegment] = useState('');
+    const [clickedImage, setClickedImage] = useState('');
 
     const getUser = async (id: string) => {
         const response = await firebase.getUser(id);
@@ -79,14 +80,26 @@ const Profile = () => {
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                {clickedSegment === 'seguidores' || clickedSegment === 'seguidos' &&
+                {clickedSegment === 'seguidores' &&
                         <>
                             <IonButtons slot="start">
                                 <IonButton color="dark" onClick={() => { setClickedSegment('') }}>
                                     <IonIcon icon={arrowBackOutline} />
                                 </IonButton>
                                 <p className={styles.username}>
-                                    {profile?.username}
+                                    {user?.username}
+                                </p>
+                            </IonButtons>
+                        </>
+                    }
+                    {clickedSegment === 'seguidos' &&
+                        <>
+                            <IonButtons slot="start">
+                                <IonButton color="dark" onClick={() => { setClickedSegment('') }}>
+                                    <IonIcon icon={arrowBackOutline} />
+                                </IonButton>
+                                <p className={styles.username}>
+                                    {user?.username}
                                 </p>
                             </IonButtons>
                         </>
@@ -121,13 +134,16 @@ const Profile = () => {
                 </IonToolbar>
             </IonHeader>
 
-            {clickedSegment === 'seguidores' || clickedSegment === 'seguidos' &&
+            {clickedSegment === 'seguidores' &&
+                <Follow clicked={clickedSegment} />
+            }
+            {clickedSegment === 'seguidos' && 
                 <Follow clicked={clickedSegment} />
             }
             {clickedSegment === 'publicaciones' &&
                 <IonContent fullscreen>
                     <LikedProvider>
-                        <Feed posts={posts} />
+                        <Feed posts={posts} clickedImage={clickedImage} />
                     </LikedProvider>
                 </IonContent>
             }
@@ -158,7 +174,7 @@ const Profile = () => {
                                         <IonCardSubtitle className={styles.label}>Seguidores</IonCardSubtitle>
                                     </IonCol>
 
-                                    <IonCol size="4" className="ion-text-center" onClick={() => { setClickedSegment('seguidos') }}>
+                                    <IonCol size="4" className="ion-text-center" onClick={() => { setClickedSegment('seguidos');  }}>
                                         <IonCardTitle className={styles.value}>
                                             {profile && profile.following.length ? profile.following.length : 0}
                                         </IonCardTitle>
@@ -219,7 +235,7 @@ const Profile = () => {
                             {sortedPosts && sortedPosts.map((post, index) => {
                                 return (
                                     <IonCol className={styles.postCol} key={index} size="4">
-                                        <img alt="post" src={post.image} />
+                                        <img alt="post" src={post.image} onClick={() => { setClickedSegment('publicaciones'); setClickedImage(`post-${index}`) }}/>
                                     </IonCol>
                                 )
                             })}

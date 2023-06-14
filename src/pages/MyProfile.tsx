@@ -64,7 +64,19 @@ const MyProfile = () => {
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                    {clickedSegment === 'seguidores' || clickedSegment === 'seguidos' &&
+                    {clickedSegment === 'seguidores' &&
+                        <>
+                            <IonButtons slot="start">
+                                <IonButton color="dark" onClick={() => { setClickedSegment('') }}>
+                                    <IonIcon icon={arrowBackOutline} />
+                                </IonButton>
+                                <p className={styles.username}>
+                                    {user?.username}
+                                </p>
+                            </IonButtons>
+                        </>
+                    }
+                    {clickedSegment === 'seguidos' &&
                         <>
                             <IonButtons slot="start">
                                 <IonButton color="dark" onClick={() => { setClickedSegment('') }}>
@@ -109,7 +121,10 @@ const MyProfile = () => {
                 </IonToolbar>
             </IonHeader>
 
-            {clickedSegment === 'seguidores' || clickedSegment === 'seguidos' &&
+            {clickedSegment === 'seguidores' &&
+                <Follow clicked={clickedSegment} />
+            }
+            {clickedSegment === 'seguidos' && 
                 <Follow clicked={clickedSegment} />
             }
             {clickedSegment === 'publicaciones' &&
