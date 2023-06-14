@@ -73,7 +73,7 @@ const login = async (
       .then((querySnapshot) => {
         if (!querySnapshot.empty) {
           // Recupera el primer documento encontrado (debería haber solo uno)
-          userData = {id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data()}
+          userData = {id: querySnapshot.docs[0].id, creation: user.metadata.creationTime, ...querySnapshot.docs[0].data()}
 
           // Actualiza el usuario en el contexto
           setUser(userData);
@@ -121,9 +121,11 @@ const register = async (
       following: [],
       link: "https://ionicframework.com/",
       posts: [],
+      savedPosts: [],
       surname: surname,
       title: "Nuevo",
       username: username,
+      creation: user.metadata.creationTime!,
       uid: user.uid,
     };
 
@@ -185,9 +187,11 @@ const getUser = async (id: string) => {
       following: snapshot.get("following"),
       link: snapshot.get("link"),
       posts: snapshot.get("posts"),
+      savedPosts: snapshot.get("savedPosts"),
       surname: snapshot.get("surname"),
       title: snapshot.get("title"),
       username: snapshot.get("username"),
+      creation: snapshot.get("creation"),
       uid: snapshot.get("uid"),
     };
     return {
@@ -362,6 +366,97 @@ const deletePost = async (userId: string, postId: string): Promise<FirebaseRespo
       data: userDocRef,
       error: false,
     };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
+const addSavedPost = async (userId: string, postId: string): Promise<FirebaseResponse> => {
+  try {
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+    const postDocRef = doc(db, POSTS_COLLECTION, postId);
+    await updateDoc(userDocRef, {
+      savedPosts: arrayUnion(postDocRef)
+    });
+    return {
+      data: userDocRef,
+      error: false,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
+const removeSavedPost = async (userId: string, postId: string): Promise<FirebaseResponse> => {
+  try {
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+    const postDocRef = doc(db, POSTS_COLLECTION, postId);
+    await updateDoc(userDocRef, {
+      savedPosts: arrayRemove(postDocRef)
+    });
+    return {
+      data: userDocRef,
+      error: false,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
+const checkSavedPosts = async (userId: string, postId: string): Promise<boolean> => {
+  try {
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+    const userSnapshot = await getDoc(userDocRef);
+    const postDocRef = doc(db, POSTS_COLLECTION, postId);
+    
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.data();
+      const savedPostsArray = userData.savedPosts;
+      const savedPostsIds = savedPostsArray.map((docRef: DocumentReference) => docRef.id);
+      return savedPostsIds.includes(postDocRef.id);
+    } else {
+      return false;
+    }
+  } catch (e) {
+    console.log(e);
+    return false;
+  }
+};
+
+const getSavedPostsFromIdUser = async (userId: string): Promise<FirebaseResponse> => {
+  try {
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+    const userDocSnap = await getDoc(userDocRef);
+    
+    if (userDocSnap.exists()) {
+      const postsArray = userDocSnap.data().savedPosts;
+      const postsData = [];
+
+      for (const postRef of postsArray) {
+        const postDocSnapshot = await getDoc(postRef);
+        if (postDocSnapshot.exists()) {
+          postsData.push({id: postDocSnapshot.id, ...(postDocSnapshot.data() || {})});
+        }
+      }
+      return {
+        data: postsData,
+        error: false,
+      };
+    } else {
+      throw new Error("El post no existe");
+    }
   } catch (e) {
     console.log(e);
     return {
@@ -668,6 +763,10 @@ const firebase = {
   getPost,
   addPost,
   deletePost,
+  addSavedPost,
+  removeSavedPost,
+  checkSavedPosts,
+  getSavedPostsFromIdUser,
   addLike,
   deleteLike,
   checkLike,

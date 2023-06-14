@@ -9,8 +9,10 @@ export interface User {
     following: Array<User>,
     link: string,
     posts: Array<Post>,
+    savedPosts: Array<Post>,
     surname: string,
     title: string,
     username: string,
+    creation: string,
     uid: string
 }

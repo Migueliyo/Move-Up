@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useHistory, useLocation, useParams } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 
 import { IonBackButton, IonButton, IonButtons, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonRow, IonSegment, IonSegmentButton, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
 import { arrowBackOutline, bookmarksOutline, chevronDown, ellipsisVertical, gridOutline, menuOutline } from 'ionicons/icons';
 
 import { useAuth } from '../auth/AuthProvider';
-import { LikedProvider } from '../context/LikedContext';
+import { AppProvider } from '../context/AppContext';
 import { Post } from '../model/post';
 import { User } from '../model/user';
 import { RouteParams } from '../model/routeParams';
@@ -23,6 +23,7 @@ const Profile = () => {
     const { user } = useAuth();
     const [profile, setProfile] = useState<User>();
     const [posts, setPosts] = useState<Post[]>([]);
+    const [savedPosts, setSavedPosts] = useState<Post[]>([]);
     const params = useParams<RouteParams>();
     const [profileID, setProfileID] = useState<string>(params.id);
     const [following, setFollowing] = useState<boolean>();
@@ -42,6 +43,12 @@ const Profile = () => {
             setPosts(response.data);
     }
 
+    const getSavedPostFromIdUser = async (id: string) => {
+        const response = await firebase.getSavedPostsFromIdUser(id);
+        if (!response.error)
+            setSavedPosts(response.data);
+    };
+
     const checkFollow = async (idUserLogged: string, idUserFollow: string) => {
         const response = await firebase.checkFollow(idUserLogged, idUserFollow);
         setFollowing(response);
@@ -58,6 +65,7 @@ const Profile = () => {
             checkFollow(user!.id!, profileID);
             getUser(profileID);
             getPostFromIdUser(profileID);
+            getSavedPostFromIdUser(profileID);
         }
     }, [profileID, params.id, user, history]);
 
@@ -67,6 +75,7 @@ const Profile = () => {
             event.detail.complete();
             getUser(profileID);
             getPostFromIdUser(profileID);
+            getSavedPostFromIdUser(profileID);
         }, 2000);
     }
 
@@ -80,7 +89,7 @@ const Profile = () => {
         <IonPage>
             <IonHeader>
                 <IonToolbar>
-                {clickedSegment === 'seguidores' &&
+                    {clickedSegment === 'seguidores' &&
                         <>
                             <IonButtons slot="start">
                                 <IonButton color="dark" onClick={() => { setClickedSegment('') }}>
@@ -116,6 +125,18 @@ const Profile = () => {
                             </IonButtons>
                         </>
                     }
+                    {clickedSegment === 'guardados' &&
+                        <>
+                            <IonButtons slot="start">
+                                <IonButton color="dark" onClick={() => { setClickedSegment('') }}>
+                                    <IonIcon icon={arrowBackOutline} />
+                                </IonButton>
+                                <p className={styles.username}>
+                                    Guardados
+                                </p>
+                            </IonButtons>
+                        </>
+                    }
                     {clickedSegment === '' &&
                         <>
                             <IonButtons slot="start">
@@ -137,14 +158,21 @@ const Profile = () => {
             {clickedSegment === 'seguidores' &&
                 <Follow clicked={clickedSegment} />
             }
-            {clickedSegment === 'seguidos' && 
+            {clickedSegment === 'seguidos' &&
                 <Follow clicked={clickedSegment} />
             }
             {clickedSegment === 'publicaciones' &&
                 <IonContent fullscreen>
-                    <LikedProvider>
-                        <Feed posts={posts} clickedImage={clickedImage} />
-                    </LikedProvider>
+                    <AppProvider>
+                        <Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
+                    </AppProvider>
+                </IonContent>
+            }
+            {clickedSegment === 'guardados' &&
+                <IonContent fullscreen>
+                    <AppProvider>
+                        <Feed posts={savedPosts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
+                    </AppProvider>
                 </IonContent>
             }
             {clickedSegment === '' &&
@@ -174,7 +202,7 @@ const Profile = () => {
                                         <IonCardSubtitle className={styles.label}>Seguidores</IonCardSubtitle>
                                     </IonCol>
 
-                                    <IonCol size="4" className="ion-text-center" onClick={() => { setClickedSegment('seguidos');  }}>
+                                    <IonCol size="4" className="ion-text-center" onClick={() => { setClickedSegment('seguidos'); }}>
                                         <IonCardTitle className={styles.value}>
                                             {profile && profile.following.length ? profile.following.length : 0}
                                         </IonCardTitle>
@@ -212,7 +240,7 @@ const Profile = () => {
                                 </IonButton>
                             </IonCol>
                         </IonRow>
-                        
+
                     </IonGrid>
 
                     <IonRow className="ion-text-center ion-justify-content-center ion-align-items-center ion-align-self-center">
@@ -230,21 +258,34 @@ const Profile = () => {
                         </IonSegment>
                     </IonRow>
 
-                    {activeSegment === 'posts' &&
-                        <IonRow>
+                    {activeSegment === 'posts' && (
+                        (sortedPosts.length > 0) ?
+                        <IonRow className="ion-no-padding ion-no-margin">
                             {sortedPosts && sortedPosts.map((post, index) => {
                                 return (
                                     <IonCol className={styles.postCol} key={index} size="4">
-                                        <img alt="post" src={post.image} onClick={() => { setClickedSegment('publicaciones'); setClickedImage(`post-${index}`) }}/>
+                                        <img key={index} alt="post" src={post.image} onClick={() => { setClickedSegment('publicaciones'); setClickedImage(`post-${index}`) }} />
                                     </IonCol>
-                                )
+                                );
                             })}
                         </IonRow>
-                    }
-                    {activeSegment === 'saved' &&
-                        <div></div>
-                    }
-
+                        :
+                        <p className={styles.parrafoInfo}>Todavía no ha compartido ninguna publicación</p>
+                    )}
+                    {activeSegment === 'saved' && (
+                        (savedPosts.length > 0) ?
+                        <IonRow className="ion-no-padding ion-no-margin">
+                            {savedPosts && savedPosts.map((post, index) => {
+                                return (
+                                    <IonCol className={styles.postCol} key={index} size="4">
+                                        <img key={index} alt="post" src={post.image} onClick={() => { setClickedSegment('guardados'); setClickedImage(`post-${index}`) }} />
+                                    </IonCol>
+                                );
+                            })}
+                        </IonRow>
+                        :
+                        <p className={styles.parrafoInfo}>Todavía no tiene ninguna publicación guardada</p>
+                    )}
                 </IonContent>
             }
         </IonPage>

@@ -1,18 +1,19 @@
 import { useState } from 'react';
 
 import { IonButton, IonButtons, IonCol, IonContent, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonRouterLink, IonRow, IonTitle, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
-
-import { FirebaseResponse } from '../model/response';
-import firebase from '../firebase/firebase';
+import { arrowBackOutline } from 'ionicons/icons';
 
 import { useAuth } from '../auth/AuthProvider';
+import { AppProvider } from '../context/AppContext';
+import { FirebaseResponse } from '../model/response';
 import { User } from '../model/user';
+import { Post } from '../model/post';
+
+import firebase from '../firebase/firebase';
+import Feed from '../components/Feed';
 
 import styles from "./Friends.module.scss";
-import Feed from '../components/Feed';
-import { Post } from '../model/post';
-import { arrowBackOutline } from 'ionicons/icons';
-import { LikedProvider } from '../context/LikedContext';
+
 
 const Friends = () => {
 
@@ -121,9 +122,9 @@ const Friends = () => {
             })}
           </div>
         </IonRow>) : (<></>)}
-        <LikedProvider>
-          <Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
-        </LikedProvider>
+				<AppProvider>
+					<Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
+				</AppProvider>
       </IonContent>
     </IonPage>
   );

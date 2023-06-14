@@ -1,11 +1,11 @@
 import { useEffect, useContext, useState, useRef } from "react";
 
 import { IonAvatar, IonButton, IonContent, IonIcon, IonItem, IonLabel, IonList, IonModal, IonPopover, IonRouterLink, IonSelect, IonSelectOption, IonText, IonThumbnail } from "@ionic/react";
-import { addCircleOutline, bookmarkOutline, chatbubbleOutline, ellipsisVertical, heart, heartOutline, paperPlaneOutline, trashOutline } from "ionicons/icons";
+import { addCircleOutline, bookmark, bookmarkOutline, chatbubbleOutline, ellipsisVertical, eyeOffOutline, heart, heartOutline, newspaperOutline, paperPlaneOutline, starOutline, trashOutline, warningOutline } from "ionicons/icons";
 
 import { useAuth } from "../auth/AuthProvider";
+import { AppContext } from "../context/AppContext";
 import { Post } from "../model/post";
-import { LikedContext, LikedContextType } from "../context/LikedContext";
 
 import TimeDifference from "./TimeDifference";
 import firebase from "../firebase/firebase";
@@ -14,12 +14,16 @@ import Comments from "./Comments";
 import styles from "./Feed.module.scss";
 
 
+
 const Feed = (props: any) => {
 
     const { posts, clickedSegment, setClickedSegment, clickedImage } = props;
     const { user } = useAuth();
 
-    const [liked, setLiked] = useContext<LikedContextType>(LikedContext);
+    const [sortedPosts, setSortedPosts] = useState<Post[]>([]);
+    const { likedContext, savedContext } = useContext(AppContext);
+    const [liked, setLiked] = likedContext;
+    const [saved, setSaved] = savedContext;
     const [postId, setPostId] = useState('');
     const refScrollStart = useRef<HTMLDivElement>(null);
     const refScrollEnd = useRef<HTMLDivElement>(null);
@@ -34,9 +38,20 @@ const Feed = (props: any) => {
         setLiked(likesArray);
     };
 
+    const checkSavedPosts = async (posts: Post[]) => {
+        const savedPostsArrayPromises = posts.map((post: Post) =>
+            firebase.checkSavedPosts(user!.id!, post.id!)
+        );
+
+        const savedPostsArray = await Promise.all(savedPostsArrayPromises);
+        setSaved(savedPostsArray);
+    };
+
     useEffect(() => {
+        setSortedPosts(posts.sort((a: any, b: any) => b.time - a.time));
         const dowloand = async () => {
             await checkLikes(posts);
+            await checkSavedPosts(posts);
             refScrollStart.current?.scrollIntoView({ behavior: "smooth", block: "start" });
             refScrollEnd.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         }
@@ -44,7 +59,8 @@ const Feed = (props: any) => {
     }, [posts, clickedImage]);
 
     const likePost = async (event: any, postId: string, userId: string) => {
-        event.target.classList.add("animate__heartBeat");
+        if (event !== null)
+            event.target.classList.add("animate__heartBeat");
 
         const index = posts.findIndex((post: Post) => post.id === postId);
         if (index === -1) {
@@ -74,20 +90,54 @@ const Feed = (props: any) => {
         }
 
         setTimeout(() => {
-            event.target.classList.remove("animate__heartBeat");
+            if (event !== null)
+                event.target.classList.remove("animate__heartBeat");
             document.getElementById(`postLike_${postId}`)!.style.display = "none";
         }, 850);
     };
+
+    const savePost = async (event: any, postId: string, userId: string) => {
+        if (event !== null)
+            event.target.classList.add("animate__heartBeat");
+        
+        const index = posts.findIndex((post: Post) => post.id === postId);
+        if (index === -1) {
+            // El post no se encontró en la lista de posts
+            return;
+        }
+        
+        if (!saved[index]) {
+            const response = await firebase.addSavedPost(userId, postId);
+            if (!response.error) {
+                setSaved((prevSaved) => {
+                    const newSaved = [...prevSaved];
+                    newSaved[index] = true;
+                    return newSaved;
+                });
+            }
+        } else {
+            const response = await firebase.removeSavedPost(userId, postId);
+            if (!response.error) {
+                setSaved((prevSaved) => {
+                    const newSaved = [...prevSaved];
+                    newSaved[index] = false;
+                    return newSaved;
+                });
+            }
+        }
+
+        setTimeout(() => {
+            if (event !== null)
+                event.target.classList.remove("animate__heartBeat");
+        }, 850);
+    }
 
     const openModal = (index: number) => {
         const modalElement = modals.current[index];
         if (modalElement) {
           modalElement.present();
         }
-      };
-
-    // Ordena los posts según el tiempo de subida
-    const sortedPosts = posts.sort((a: any, b: any) => b.time - a.time);
+    };
 
     return (
         (clickedSegment === 'comentarios') ? (
@@ -129,17 +179,21 @@ const Feed = (props: any) => {
                                             </div>
                                         </div>
                                         <IonList>
-                                            <IonItem>
-                                                Me gusta
+                                            <IonItem className={styles.postProfileInfo} onClick={() => likePost(null, post.id!, user!.id!)}>
+                                                <IonIcon style={{marginRight: 10}} icon={heartOutline}></IonIcon>
+                                                {liked[index] ? "No me gusta" : "Me gusta"}
+                                            </IonItem>
+                                            <IonItem onClick={() => savePost(null, post.id!, user!.id!)} >
+                                                <IonIcon style={{marginRight: 10}} icon={bookmarkOutline}></IonIcon>
+                                                {saved[index] ? "Eliminar de guardados" : "Guardar"}
                                             </IonItem>
                                             <IonItem>
-                                                Editar pie de foto
+                                                <IonIcon style={{marginRight: 10}} icon={newspaperOutline}></IonIcon>
+                                                Información sobre la cuenta
                                             </IonItem>
                                             <IonItem>
-                                                Descargar
-                                            </IonItem>
-                                            <IonItem>
-                                                Eliminar
+                                                <IonIcon  style={{marginRight: 10, color: 'red'}} icon={warningOutline}></IonIcon>
+                                                <span style={{color: 'red'}}>Denunciar</span>
                                             </IonItem>
                                         </IonList>
                                         </IonContent>
@@ -160,7 +214,7 @@ const Feed = (props: any) => {
                                 </div>
 
                                 <div className={styles.postBookmark}>
-                                    <IonIcon icon={bookmarkOutline} />
+                                    <IonIcon id={`postSave_${post.id}`} icon={saved[index] ? bookmark : bookmarkOutline} onClick={e => savePost(e, post.id!, user!.id!)} />
                                 </div>
                             </div>
 

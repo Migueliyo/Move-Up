@@ -5,10 +5,11 @@ import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonRefr
 import { addCircleOutline, arrowBackOutline, heartOutline, logOutOutline, paperPlaneOutline } from 'ionicons/icons';
 
 import { FirebaseResponse } from '../model/response';
-import { LikedProvider } from '../context/LikedContext';
+import { AppProvider } from '../context/AppContext';
 
 import Feed from '../components/Feed';
 import firebase from '../firebase/firebase';
+
 
 const Home = () => {
 
@@ -87,10 +88,9 @@ const Home = () => {
 				<IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
 					<IonRefresherContent></IonRefresherContent>
 				</IonRefresher>
-				<LikedProvider>
+				<AppProvider>
 					<Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
-				</LikedProvider>
-
+				</AppProvider>
 			</IonContent>
 		</IonPage>
 	);
