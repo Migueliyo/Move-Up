@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { doc, getDoc, getFirestore, updateDoc, setDoc, arrayUnion, arrayRemove, DocumentReference } from "firebase/firestore";
+import { doc, getDoc, getFirestore, updateDoc, setDoc, arrayUnion, arrayRemove, DocumentReference, deleteDoc } from "firebase/firestore";
 import {
   collection,
   getDocs,
@@ -350,6 +350,27 @@ const addPost = async (file: UserPhoto, userId: string, titulo: string, username
   }
 };
 
+const deletePost = async (userId: string, postId: string): Promise<FirebaseResponse> => {
+  try {
+    const userDocRef = doc(db, USERS_COLLECTION, userId);
+    const postDocRef = doc(db, POSTS_COLLECTION, postId);
+    await updateDoc(userDocRef, {
+      posts: arrayRemove(postDocRef)
+    });
+    await deleteDoc(postDocRef);
+    return {
+      data: userDocRef,
+      error: false,
+    };
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
 const addLike = async (userId: string, postId: string): Promise<FirebaseResponse> => {
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
@@ -635,14 +656,6 @@ const getCommentsFromIdPost = async (postId: string): Promise<FirebaseResponse> 
   }
 };
 
-// const deleteCurses = async (key) => {
-//     if (key) {
-//         const curses = doc(db, USERS_COLLECTION, key);
-//         const response = await deleteDoc(curses);
-//     }
-//     //todo: tratar errores
-// }
-
 const firebase = {
   getUsers,
   login,
@@ -654,6 +667,7 @@ const firebase = {
   getPosts,
   getPost,
   addPost,
+  deletePost,
   addLike,
   deleteLike,
   checkLike,

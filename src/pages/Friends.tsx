@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { IonButton, IonButtons, IonCol, IonContent, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonRouterLink, IonRow, IonTitle, IonToolbar, RefresherEventDetail } from '@ionic/react';
+import { IonButton, IonButtons, IonCol, IonContent, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonRouterLink, IonRow, IonTitle, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
 
 import { FirebaseResponse } from '../model/response';
 import firebase from '../firebase/firebase';
 
-import { useLocation } from 'react-router';
 import { useAuth } from '../auth/AuthProvider';
 import { User } from '../model/user';
 
@@ -18,7 +17,6 @@ import { LikedProvider } from '../context/LikedContext';
 const Friends = () => {
 
   const { user } = useAuth();
-  const location = useLocation();
   const [friends, setFriends] = useState<User[]>([]);
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedColIndex, setSelectedColIndex] = useState<number | null>(null);
@@ -62,11 +60,11 @@ const Friends = () => {
   }
 
 
-  useEffect(
+  useIonViewWillEnter(
     () => {
       getFriends(user!.id!);
       getPosts();
-    }, [location.key])
+    }, [])
 
   return (
     <IonPage>
