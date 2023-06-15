@@ -15,6 +15,7 @@ const Search: React.FC = () => {
   const history = useHistory();
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
   const [loadedUsers, setLoadedUsers] = useState(15);
 
   const getUsers = async () => {
@@ -30,6 +31,9 @@ const Search: React.FC = () => {
   useIonViewWillEnter(
     () => {
       getUsers();
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
     }, []
   )
 
@@ -41,6 +45,7 @@ const Search: React.FC = () => {
         }} showClearButton="always" placeholder='Buscar' className="searchbar-no-shadow"></IonSearchbar>
       </IonHeader>
       <IonContent fullscreen>
+      {loading && <IonProgressBar type="indeterminate"></IonProgressBar>}
         <IonList>
           {users.sort().filter((user: User) => {
             return user.username.includes(search)

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { IonButton, IonButtons, IonCol, IonContent, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonRouterLink, IonRow, IonTitle, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
+import { IonButton, IonButtons, IonCol, IonContent, IonHeader, IonIcon, IonPage, IonProgressBar, IonRefresher, IonRefresherContent, IonRouterLink, IonRow, IonTitle, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
 import { arrowBackOutline } from 'ionicons/icons';
 
 import { useAuth } from '../auth/AuthProvider';
@@ -22,6 +22,7 @@ const Friends = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedColIndex, setSelectedColIndex] = useState<number | null>(null);
   const [clickedSegment, setClickedSegment] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const getFriends = async (id: string) => {
     const response: FirebaseResponse = await firebase.getFriendsFromIdUser(id);
@@ -65,6 +66,9 @@ const Friends = () => {
     () => {
       getFriends(user!.id!);
       getPosts();
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000);
     }, [])
 
   return (
@@ -87,6 +91,7 @@ const Friends = () => {
               <p className={styles.firstDiv}>Amigos</p>
 						)}
         </IonToolbar>
+        {loading && <IonProgressBar type="indeterminate"></IonProgressBar>}
       </IonHeader>
       <IonContent fullscreen>
         <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
@@ -122,9 +127,7 @@ const Friends = () => {
             })}
           </div>
         </IonRow>) : (<></>)}
-				<AppProvider>
-					<Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
-				</AppProvider>
+				<Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
       </IonContent>
     </IonPage>
   );

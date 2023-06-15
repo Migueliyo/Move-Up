@@ -45,8 +45,8 @@ const Home = () => {
 
 			<IonHeader>
 				<IonToolbar>
-					{(clickedSegment === 'comentarios') ?
-						(<IonButtons slot="start">
+					{clickedSegment === 'comentarios' &&
+						<IonButtons slot="start">
 							<IonButton color="dark" onClick={() => { setClickedSegment('') }}>
 								<IonIcon icon={arrowBackOutline} />
 							</IonButton>
@@ -54,33 +54,43 @@ const Home = () => {
 								Comentarios
 							</p>
 						</IonButtons>
-						)
-						:
-						(
-							<>
-								<IonButtons slot="start">
-									<img alt="main logo" src="/assets/logo.png" style={{ width: "7rem" }} />
-								</IonButtons>
+					}
+					{clickedSegment === 'informacion' &&
+						<IonButtons slot="start">
+							<IonButton color="dark" onClick={() => { setClickedSegment('') }}>
+								<IonIcon icon={arrowBackOutline} />
+							</IonButton>
+							<p className='toolbar'>
+								Información sobre esta cuenta
+							</p>
+						</IonButtons>
+					}
 
-								<IonButtons slot="end">
-									<IonButton color="dark">
-										<IonIcon icon={addCircleOutline} />
-									</IonButton>
-									<IonButton color="dark">
-										<IonIcon icon={heartOutline} />
-									</IonButton>
+					{clickedSegment === '' &&
+						<>
+							<IonButtons slot="start">
+								<img alt="main logo" src="/assets/logo.png" style={{ width: "7rem" }} />
+							</IonButtons>
 
-									<IonButton color="dark">
-										<IonIcon icon={paperPlaneOutline} />
-									</IonButton>
+							<IonButtons slot="end">
+								<IonButton color="dark">
+									<IonIcon icon={addCircleOutline} />
+								</IonButton>
+								<IonButton color="dark">
+									<IonIcon icon={heartOutline} />
+								</IonButton>
 
-									<IonButton onClick={firebase.logOut}>
-										<IonIcon icon={logOutOutline} />
-									</IonButton>
+								<IonButton color="dark">
+									<IonIcon icon={paperPlaneOutline} />
+								</IonButton>
 
-								</IonButtons>
-							</>
-						)}
+								<IonButton onClick={firebase.logOut}>
+									<IonIcon icon={logOutOutline} />
+								</IonButton>
+
+							</IonButtons>
+						</>
+					}
 				</IonToolbar>
 			</IonHeader>
 
@@ -88,9 +98,7 @@ const Home = () => {
 				<IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
 					<IonRefresherContent></IonRefresherContent>
 				</IonRefresher>
-				<AppProvider>
-					<Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
-				</AppProvider>
+				<Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
 			</IonContent>
 		</IonPage>
 	);

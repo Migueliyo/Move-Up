@@ -5,14 +5,18 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { doc, getDoc, getFirestore, updateDoc, setDoc, arrayUnion, arrayRemove, DocumentReference, deleteDoc } from "firebase/firestore";
 import {
-  collection,
-  getDocs,
-  addDoc,
-  query,
-  where
+  doc,
+  getDoc,
+  getFirestore,
+  updateDoc,
+  setDoc,
+  arrayUnion,
+  arrayRemove,
+  DocumentReference,
+  deleteDoc,
 } from "firebase/firestore";
+import { collection, getDocs, addDoc, query, where } from "firebase/firestore";
 import {
   getDownloadURL,
   getStorage,
@@ -73,7 +77,11 @@ const login = async (
       .then((querySnapshot) => {
         if (!querySnapshot.empty) {
           // Recupera el primer documento encontrado (debería haber solo uno)
-          userData = {id: querySnapshot.docs[0].id, creation: user.metadata.creationTime, ...querySnapshot.docs[0].data()}
+          userData = {
+            id: querySnapshot.docs[0].id,
+            creation: user.metadata.creationTime,
+            ...querySnapshot.docs[0].data(),
+          };
 
           // Actualiza el usuario en el contexto
           setUser(userData);
@@ -207,11 +215,13 @@ const getUser = async (id: string) => {
   }
 };
 
-const getFriendsFromIdUser = async (userId: string): Promise<FirebaseResponse> => {
+const getFriendsFromIdUser = async (
+  userId: string
+): Promise<FirebaseResponse> => {
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const userDocSnap = await getDoc(userDocRef);
-    
+
     if (userDocSnap.exists()) {
       const followingArray = userDocSnap.data().following;
       const followingData = [];
@@ -219,7 +229,10 @@ const getFriendsFromIdUser = async (userId: string): Promise<FirebaseResponse> =
       for (const followingRef of followingArray) {
         const followingDocSnapshot = await getDoc(followingRef);
         if (followingDocSnapshot.exists()) {
-          followingData.push({id: followingDocSnapshot.id, ...(followingDocSnapshot.data() || {})});
+          followingData.push({
+            id: followingDocSnapshot.id,
+            ...(followingDocSnapshot.data() || {}),
+          });
         }
       }
       return {
@@ -263,7 +276,7 @@ const getPost = async (postId: string): Promise<FirebaseResponse> => {
   try {
     const postDocRef = doc(db, POSTS_COLLECTION, postId);
     const postDoc = await getDoc(postDocRef);
-    const post = {id: postDoc.id, ...postDoc.data()};
+    const post = { id: postDoc.id, ...postDoc.data() };
     return {
       data: post,
       error: false,
@@ -277,11 +290,13 @@ const getPost = async (postId: string): Promise<FirebaseResponse> => {
   }
 };
 
-const getPostsFromIdUser = async (userId: string): Promise<FirebaseResponse> => {
+const getPostsFromIdUser = async (
+  userId: string
+): Promise<FirebaseResponse> => {
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const userDocSnap = await getDoc(userDocRef);
-    
+
     if (userDocSnap.exists()) {
       const postsArray = userDocSnap.data().posts;
       const postsData = [];
@@ -289,7 +304,10 @@ const getPostsFromIdUser = async (userId: string): Promise<FirebaseResponse> => 
       for (const postRef of postsArray) {
         const postDocSnapshot = await getDoc(postRef);
         if (postDocSnapshot.exists()) {
-          postsData.push({id: postDocSnapshot.id, ...(postDocSnapshot.data() || {})});
+          postsData.push({
+            id: postDocSnapshot.id,
+            ...(postDocSnapshot.data() || {}),
+          });
         }
       }
       return {
@@ -308,7 +326,55 @@ const getPostsFromIdUser = async (userId: string): Promise<FirebaseResponse> => 
   }
 };
 
-const addPost = async (file: UserPhoto, userId: string, titulo: string, username: string, avatar: string): Promise<FirebaseResponse> => {
+const getUserFromPostId = async (postId: string): Promise<FirebaseResponse> => {
+  try {
+    const postDocRef = doc(db, POSTS_COLLECTION, postId);
+    const postDocSnap = await getDoc(postDocRef);
+
+    if (postDocSnap.exists()) {
+      const userId = postDocSnap.data().user_id;
+      const collectionRef = collection(db, USERS_COLLECTION);
+      const ref = doc(collectionRef, userId);
+      const snapshot = await getDoc(ref);
+      const user: User = {
+        id: snapshot.id,
+        avatar: snapshot.get("avatar"),
+        bio: snapshot.get("bio"),
+        firstname: snapshot.get("firstname"),
+        followers: snapshot.get("followers"),
+        following: snapshot.get("following"),
+        link: snapshot.get("link"),
+        posts: snapshot.get("posts"),
+        savedPosts: snapshot.get("savedPosts"),
+        surname: snapshot.get("surname"),
+        title: snapshot.get("title"),
+        username: snapshot.get("username"),
+        creation: snapshot.get("creation"),
+        uid: snapshot.get("uid"),
+      };
+      return {
+        data: user,
+        error: false,
+      };
+    } else {
+      throw new Error("El post no existe");
+    }
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
+const addPost = async (
+  file: UserPhoto,
+  userId: string,
+  titulo: string,
+  username: string,
+  avatar: string
+): Promise<FirebaseResponse> => {
   let post: Post;
   try {
     const storageRef = ref(storage, file.filepath);
@@ -323,13 +389,13 @@ const addPost = async (file: UserPhoto, userId: string, titulo: string, username
         post = {
           image: downloadUrl,
           caption: titulo,
-          likes:  [],
+          likes: [],
           user_id: userId,
           user_username: username,
           user_avatar: avatar,
-          time: new Date,
-          comments: []
-        }
+          time: new Date(),
+          comments: [],
+        };
 
         const usersCol = collection(db, POSTS_COLLECTION);
         const docRef = await addDoc(usersCol, post);
@@ -337,10 +403,10 @@ const addPost = async (file: UserPhoto, userId: string, titulo: string, username
         // Actualiza el campo "posts" del usuario correspondiente
         const userDocRef = doc(db, USERS_COLLECTION, userId);
         await updateDoc(userDocRef, {
-          posts: arrayUnion(docRef)
+          posts: arrayUnion(docRef),
         });
       }
-    )
+    );
     return {
       data: post!,
       error: false,
@@ -354,12 +420,15 @@ const addPost = async (file: UserPhoto, userId: string, titulo: string, username
   }
 };
 
-const deletePost = async (userId: string, postId: string): Promise<FirebaseResponse> => {
+const deletePost = async (
+  userId: string,
+  postId: string
+): Promise<FirebaseResponse> => {
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const postDocRef = doc(db, POSTS_COLLECTION, postId);
     await updateDoc(userDocRef, {
-      posts: arrayRemove(postDocRef)
+      posts: arrayRemove(postDocRef),
     });
     await deleteDoc(postDocRef);
     return {
@@ -375,12 +444,15 @@ const deletePost = async (userId: string, postId: string): Promise<FirebaseRespo
   }
 };
 
-const addSavedPost = async (userId: string, postId: string): Promise<FirebaseResponse> => {
+const addSavedPost = async (
+  userId: string,
+  postId: string
+): Promise<FirebaseResponse> => {
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const postDocRef = doc(db, POSTS_COLLECTION, postId);
     await updateDoc(userDocRef, {
-      savedPosts: arrayUnion(postDocRef)
+      savedPosts: arrayUnion(postDocRef),
     });
     return {
       data: userDocRef,
@@ -395,12 +467,15 @@ const addSavedPost = async (userId: string, postId: string): Promise<FirebaseRes
   }
 };
 
-const removeSavedPost = async (userId: string, postId: string): Promise<FirebaseResponse> => {
+const removeSavedPost = async (
+  userId: string,
+  postId: string
+): Promise<FirebaseResponse> => {
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const postDocRef = doc(db, POSTS_COLLECTION, postId);
     await updateDoc(userDocRef, {
-      savedPosts: arrayRemove(postDocRef)
+      savedPosts: arrayRemove(postDocRef),
     });
     return {
       data: userDocRef,
@@ -415,16 +490,21 @@ const removeSavedPost = async (userId: string, postId: string): Promise<Firebase
   }
 };
 
-const checkSavedPosts = async (userId: string, postId: string): Promise<boolean> => {
+const checkSavedPosts = async (
+  userId: string,
+  postId: string
+): Promise<boolean> => {
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const userSnapshot = await getDoc(userDocRef);
     const postDocRef = doc(db, POSTS_COLLECTION, postId);
-    
+
     if (userSnapshot.exists()) {
       const userData = userSnapshot.data();
       const savedPostsArray = userData.savedPosts;
-      const savedPostsIds = savedPostsArray.map((docRef: DocumentReference) => docRef.id);
+      const savedPostsIds = savedPostsArray.map(
+        (docRef: DocumentReference) => docRef.id
+      );
       return savedPostsIds.includes(postDocRef.id);
     } else {
       return false;
@@ -435,11 +515,13 @@ const checkSavedPosts = async (userId: string, postId: string): Promise<boolean>
   }
 };
 
-const getSavedPostsFromIdUser = async (userId: string): Promise<FirebaseResponse> => {
+const getSavedPostsFromIdUser = async (
+  userId: string
+): Promise<FirebaseResponse> => {
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const userDocSnap = await getDoc(userDocRef);
-    
+
     if (userDocSnap.exists()) {
       const postsArray = userDocSnap.data().savedPosts;
       const postsData = [];
@@ -447,7 +529,10 @@ const getSavedPostsFromIdUser = async (userId: string): Promise<FirebaseResponse
       for (const postRef of postsArray) {
         const postDocSnapshot = await getDoc(postRef);
         if (postDocSnapshot.exists()) {
-          postsData.push({id: postDocSnapshot.id, ...(postDocSnapshot.data() || {})});
+          postsData.push({
+            id: postDocSnapshot.id,
+            ...(postDocSnapshot.data() || {}),
+          });
         }
       }
       return {
@@ -466,12 +551,15 @@ const getSavedPostsFromIdUser = async (userId: string): Promise<FirebaseResponse
   }
 };
 
-const addLike = async (userId: string, postId: string): Promise<FirebaseResponse> => {
+const addLike = async (
+  userId: string,
+  postId: string
+): Promise<FirebaseResponse> => {
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const postDocRef = doc(db, POSTS_COLLECTION, postId);
     await updateDoc(postDocRef, {
-      likes: arrayUnion(userDocRef)
+      likes: arrayUnion(userDocRef),
     });
     return {
       data: userDocRef,
@@ -486,12 +574,15 @@ const addLike = async (userId: string, postId: string): Promise<FirebaseResponse
   }
 };
 
-const deleteLike = async (userId: string, postId: string): Promise<FirebaseResponse> => {
+const deleteLike = async (
+  userId: string,
+  postId: string
+): Promise<FirebaseResponse> => {
   try {
     const userDocRef = doc(db, USERS_COLLECTION, userId);
     const postDocRef = doc(db, POSTS_COLLECTION, postId);
     await updateDoc(postDocRef, {
-      likes: arrayRemove(userDocRef)
+      likes: arrayRemove(userDocRef),
     });
     return {
       data: userDocRef,
@@ -530,7 +621,7 @@ const getLikes = async (postId: string): Promise<FirebaseResponse> => {
   try {
     const postDocRef = doc(db, POSTS_COLLECTION, postId);
     const postDocSnapshot = await getDoc(postDocRef);
-    
+
     if (postDocSnapshot.exists()) {
       const likesArray = postDocSnapshot.data().likes;
       const likesData = [];
@@ -538,7 +629,10 @@ const getLikes = async (postId: string): Promise<FirebaseResponse> => {
       for (const likeRef of likesArray) {
         const likeDocSnapshot = await getDoc(likeRef);
         if (likeDocSnapshot.exists()) {
-          likesData.push({id: likeDocSnapshot.id, ...(likeDocSnapshot.data() || {})});
+          likesData.push({
+            id: likeDocSnapshot.id,
+            ...(likeDocSnapshot.data() || {}),
+          });
         }
       }
       return {
@@ -557,20 +651,27 @@ const getLikes = async (postId: string): Promise<FirebaseResponse> => {
   }
 };
 
-const follow = async (userIdLogged: string, userIdFollowing: string): Promise<FirebaseResponse> => {
+const follow = async (
+  userIdLogged: string,
+  userIdFollowing: string
+): Promise<FirebaseResponse> => {
   try {
     const userLoggedDocRef = doc(db, USERS_COLLECTION, userIdLogged);
     const userFollowingDocRef = doc(db, USERS_COLLECTION, userIdFollowing);
     // Añadiendo la referencia del seguido a los seguidos del usuario logueado
     await updateDoc(userLoggedDocRef, {
-      following: arrayUnion(userFollowingDocRef)
+      following: arrayUnion(userFollowingDocRef),
     });
     // Añadiendo la referencia de seguidor a los seguidores del usuario seguido
     await updateDoc(userFollowingDocRef, {
-      followers: arrayUnion(userLoggedDocRef)
+      followers: arrayUnion(userLoggedDocRef),
     });
     return {
-      data: "El usuario " + userLoggedDocRef.id + " ahora sigue a " + userFollowingDocRef.id,
+      data:
+        "El usuario " +
+        userLoggedDocRef.id +
+        " ahora sigue a " +
+        userFollowingDocRef.id,
       error: false,
     };
   } catch (e) {
@@ -582,20 +683,27 @@ const follow = async (userIdLogged: string, userIdFollowing: string): Promise<Fi
   }
 };
 
-const unfollow = async (userIdLogged: string, userIdFollowing: string): Promise<FirebaseResponse> => {
+const unfollow = async (
+  userIdLogged: string,
+  userIdFollowing: string
+): Promise<FirebaseResponse> => {
   try {
     const userLoggedDocRef = doc(db, USERS_COLLECTION, userIdLogged);
     const userFollowingDocRef = doc(db, USERS_COLLECTION, userIdFollowing);
     // Añadiendo la referencia del seguido a los seguidos del usuario logueado
     await updateDoc(userLoggedDocRef, {
-      following: arrayRemove(userFollowingDocRef)
+      following: arrayRemove(userFollowingDocRef),
     });
     // Añadiendo la referencia de seguidor a los seguidores del usuario seguido
     await updateDoc(userFollowingDocRef, {
-      followers: arrayRemove(userLoggedDocRef)
+      followers: arrayRemove(userLoggedDocRef),
     });
     return {
-      data: "El usuario " + userLoggedDocRef.id + " deja de seguir a " + userFollowingDocRef.id,
+      data:
+        "El usuario " +
+        userLoggedDocRef.id +
+        " deja de seguir a " +
+        userFollowingDocRef.id,
       error: false,
     };
   } catch (e) {
@@ -619,7 +727,10 @@ const getFollowers = async (userId: string): Promise<FirebaseResponse> => {
         for (const followerRef of userData.followers) {
           const followerDoc = await getDoc(followerRef);
           if (followerDoc.exists()) {
-            followers.push({id: followerDoc.id, ...(followerDoc.data() || {})});
+            followers.push({
+              id: followerDoc.id,
+              ...(followerDoc.data() || {}),
+            });
           }
         }
       }
@@ -631,13 +742,45 @@ const getFollowers = async (userId: string): Promise<FirebaseResponse> => {
       throw new Error("El usuario no existe");
     }
   } catch (e) {
-    console.log("¡No tiene seguidores! -> "+ e);
+    console.log("¡No tiene seguidores! -> " + e);
     return {
       data: null,
       error: true,
     };
   }
 };
+
+const getCommonFollowers = async (userId1: string, userId2: string): Promise<FirebaseResponse> => {
+  try {
+    const userDocRef1 = doc(db, USERS_COLLECTION, userId1);
+    const userDocRef2 = doc(db, USERS_COLLECTION, userId2);
+    const userDocSnap1 = await getDoc(userDocRef1);
+    const userDocSnap2 = await getDoc(userDocRef2);
+
+    if (userDocSnap1.exists() && userDocSnap2.exists()) {
+      const followers1 = userDocSnap1.data().following;
+      const followers2 = userDocSnap2.data().followers;
+
+      const commonFollowers = followers1.filter((follower: User) =>
+        followers2.includes(follower)
+      );
+
+      return {
+        data: commonFollowers,
+        error: false,
+      };
+    } else {
+      throw new Error("Al menos uno de los usuarios no existe");
+    }
+  } catch (e) {
+    console.log(e);
+    return {
+      data: null,
+      error: true,
+    };
+  }
+};
+
 
 const getFollowing = async (userId: string): Promise<FirebaseResponse> => {
   try {
@@ -651,7 +794,10 @@ const getFollowing = async (userId: string): Promise<FirebaseResponse> => {
         for (const followingRef of userData.following) {
           const followingDoc = await getDoc(followingRef);
           if (followingDoc.exists()) {
-            following.push({id: followingDoc.id, ...(followingDoc.data() || {})});
+            following.push({
+              id: followingDoc.id,
+              ...(followingDoc.data() || {}),
+            });
           }
         }
       }
@@ -663,7 +809,7 @@ const getFollowing = async (userId: string): Promise<FirebaseResponse> => {
       throw new Error("El usuario no existe");
     }
   } catch (e) {
-    console.log("¡No tiene seguidos! -> "+ e);
+    console.log("¡No tiene seguidos! -> " + e);
     return {
       data: null,
       error: true,
@@ -671,7 +817,10 @@ const getFollowing = async (userId: string): Promise<FirebaseResponse> => {
   }
 };
 
-const checkFollow = async (userIdLogged: string, userIdFollowing: string): Promise<boolean> => {
+const checkFollow = async (
+  userIdLogged: string,
+  userIdFollowing: string
+): Promise<boolean> => {
   try {
     const userLoggedDocRef = doc(db, USERS_COLLECTION, userIdLogged);
     const userSnapshot = await getDoc(userLoggedDocRef);
@@ -680,7 +829,9 @@ const checkFollow = async (userIdLogged: string, userIdFollowing: string): Promi
     if (userSnapshot.exists()) {
       const followingData = userSnapshot.data();
       const followingArray = followingData.following;
-      const followingIds = followingArray.map((docRef: DocumentReference) => docRef.id);
+      const followingIds = followingArray.map(
+        (docRef: DocumentReference) => docRef.id
+      );
       return followingIds.includes(userFollowingDocRef.id);
     } else {
       return false;
@@ -691,21 +842,27 @@ const checkFollow = async (userIdLogged: string, userIdFollowing: string): Promi
   }
 };
 
-const addComment = async (postId: string, userId: string, username: string, avatar: string, commentText: string): Promise<FirebaseResponse> => {
+const addComment = async (
+  postId: string,
+  userId: string,
+  username: string,
+  avatar: string,
+  commentText: string
+): Promise<FirebaseResponse> => {
   try {
     const comment: Comment = {
       user_id: userId,
       user_username: username,
       user_avatar: avatar,
-      time: new Date,
-      comment: commentText
-    }
+      time: new Date(),
+      comment: commentText,
+    };
     const commentsCol = collection(db, COMMENTS_COLLECTION);
-    const docRef = await addDoc(commentsCol, comment)
+    const docRef = await addDoc(commentsCol, comment);
 
     const postDocRef = doc(db, POSTS_COLLECTION, postId);
     await updateDoc(postDocRef, {
-      comments: arrayUnion(docRef)
+      comments: arrayUnion(docRef),
     });
     return {
       data: comment,
@@ -720,18 +877,20 @@ const addComment = async (postId: string, userId: string, username: string, avat
   }
 };
 
-const getCommentsFromIdPost = async (postId: string): Promise<FirebaseResponse> => {
+const getCommentsFromIdPost = async (
+  postId: string
+): Promise<FirebaseResponse> => {
   try {
     const postDocRef = doc(db, POSTS_COLLECTION, postId);
     const postDoc = await getDoc(postDocRef);
     if (postDoc.exists()) {
       const postData = postDoc.data();
       const comments = [];
-      if (postData.comments){
-        for (const commentRef of postData.comments){
+      if (postData.comments) {
+        for (const commentRef of postData.comments) {
           const commentDoc = await getDoc(commentRef);
-          if (commentDoc.exists()){
-            comments.push({id: commentDoc.id, ...(commentDoc.data() || {})})
+          if (commentDoc.exists()) {
+            comments.push({ id: commentDoc.id, ...(commentDoc.data() || {}) });
           }
         }
       }
@@ -761,6 +920,8 @@ const firebase = {
   getFriendsFromIdUser,
   getPosts,
   getPost,
+  getPostsFromIdUser,
+  getUserFromPostId,
   addPost,
   deletePost,
   addSavedPost,
@@ -770,14 +931,14 @@ const firebase = {
   addLike,
   deleteLike,
   checkLike,
-  getPostsFromIdUser,
   follow,
   unfollow,
   getFollowers,
+  getCommonFollowers,
   getFollowing,
   checkFollow,
   addComment,
-  getCommentsFromIdPost
+  getCommentsFromIdPost,
 };
 
 export default firebase;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 
-import { IonBackButton, IonButton, IonButtons, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonRow, IonSegment, IonSegmentButton, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
+import { IonBackButton, IonButton, IonButtons, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonProgressBar, IonRefresher, IonRefresherContent, IonRow, IonSegment, IonSegmentButton, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
 import { arrowBackOutline, bookmarksOutline, chevronDown, ellipsisVertical, gridOutline, menuOutline } from 'ionicons/icons';
 
 import { useAuth } from '../auth/AuthProvider';
@@ -30,6 +30,7 @@ const Profile = () => {
     const [activeSegment, setActiveSegment] = useState('posts');
     const [clickedSegment, setClickedSegment] = useState('');
     const [clickedImage, setClickedImage] = useState('');
+    const [loading, setLoading] = useState(true);
 
     const getUser = async (id: string) => {
         const response = await firebase.getUser(id);
@@ -62,6 +63,9 @@ const Profile = () => {
         if (params.id === user!.id) {
             history.replace('/myprofile');
         } else {
+            setTimeout(() => {
+                setLoading(false);
+              }, 2000); 
             checkFollow(user!.id!, profileID);
             getUser(profileID);
             getPostFromIdUser(profileID);
@@ -153,6 +157,7 @@ const Profile = () => {
                         </>
                     }
                 </IonToolbar>
+                {loading && <IonProgressBar type="indeterminate"></IonProgressBar>}
             </IonHeader>
 
             {clickedSegment === 'seguidores' &&
@@ -163,16 +168,12 @@ const Profile = () => {
             }
             {clickedSegment === 'publicaciones' &&
                 <IonContent fullscreen>
-                    <AppProvider>
-                        <Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
-                    </AppProvider>
+                    <Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
                 </IonContent>
             }
             {clickedSegment === 'guardados' &&
                 <IonContent fullscreen>
-                    <AppProvider>
-                        <Feed posts={savedPosts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
-                    </AppProvider>
+                    <Feed posts={savedPosts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
                 </IonContent>
             }
             {clickedSegment === '' &&

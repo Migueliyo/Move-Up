@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 
-import { IonButton, IonButtons, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonRow, IonSegment, IonSegmentButton, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
+import { IonButton, IonButtons, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonPage, IonProgressBar, IonRefresher, IonRefresherContent, IonRow, IonSegment, IonSegmentButton, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
 import { addCircleOutline, arrowBackOutline, bookmarksOutline, chevronDown, gridOutline, menuOutline } from 'ionicons/icons';
 
 import { useAuth } from '../auth/AuthProvider';
-import { AppProvider } from '../context/AppContext';
 import { User } from '../model/user';
 import { Post } from '../model/post';
 import firebase from '../firebase/firebase';
@@ -24,6 +23,7 @@ const MyProfile = () => {
     const [activeSegment, setActiveSegment] = useState('posts');
     const [clickedSegment, setClickedSegment] = useState('');
     const [clickedImage, setClickedImage] = useState('');
+    const [loading, setLoading] = useState(true);
 
     const getPostFromIdUser = async (id: string) => {
         const response = await firebase.getPostsFromIdUser(id);
@@ -50,6 +50,9 @@ const MyProfile = () => {
             getUser(user!.id!);
             getPostFromIdUser(user.id!);
             getSavedPostFromIdUser(user.id!);
+            setTimeout(() => {
+                setLoading(false);
+            }, 2000);
         }
     }, []);
 
@@ -68,6 +71,7 @@ const MyProfile = () => {
     };
 
     const sortedPosts = posts.sort((a: any, b: any) => b.time - a.time);
+    const sortedSavedPosts = savedPosts.sort((a: any, b: any) => b.time - a.time);
 
     return (
         <IonPage>
@@ -140,6 +144,7 @@ const MyProfile = () => {
                         </>
                     }
                 </IonToolbar>
+                {loading && <IonProgressBar type="indeterminate"></IonProgressBar>}
             </IonHeader>
 
             {clickedSegment === 'seguidores' &&
@@ -150,16 +155,12 @@ const MyProfile = () => {
             }
             {clickedSegment === 'publicaciones' &&
                 <IonContent fullscreen>
-                    <AppProvider>
-                        <Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
-                    </AppProvider>
+                    <Feed posts={posts} clickedImage={clickedImage} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
                 </IonContent>
             }
             {clickedSegment === 'guardados' &&
                 <IonContent fullscreen>
-                    <AppProvider>
-                        <Feed posts={savedPosts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
-                    </AppProvider>
+                    <Feed posts={savedPosts} clickedImage={clickedImage} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
                 </IonContent>
             }
             {clickedSegment === '' &&
@@ -254,9 +255,9 @@ const MyProfile = () => {
                         <p className={styles.parrafoInfo}>Todavía no has compartido ninguna publicación</p>
                     )}
                     {activeSegment === 'saved' && (
-                        (savedPosts.length > 0) ?
+                        (sortedSavedPosts.length > 0) ?
                         <IonRow className="ion-no-padding ion-no-margin">
-                            {savedPosts && savedPosts.map((post, index) => {
+                            {sortedSavedPosts && sortedSavedPosts.map((post, index) => {
                                 return (
                                     <IonCol className={styles.postCol} key={index} size="4">
                                         <img key={index} alt="post" src={post.image} onClick={() => { setClickedSegment('guardados'); setClickedImage(`post-${index}`) }} />
