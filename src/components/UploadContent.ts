@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useHistory } from "react-router";
 import { isPlatform } from "@ionic/react";
 
 import {
@@ -14,11 +15,16 @@ import { useAuth } from "../auth/AuthProvider";
 import { UserPhoto } from "../model/userPhoto";
 
 export const usePhotoGallery = () => {
+  const history = useHistory();
   const [photo, setPhoto] = useState<UserPhoto>();
   const [error, setError] = useState<boolean>(false);
+  const [openError, setOpenError] = useState<boolean>(false);
   const { user } = useAuth();
 
-  const savePicture = async (photo: Photo, fileName: string): Promise<UserPhoto> => {
+  const savePicture = async (
+    photo: Photo,
+    fileName: string
+  ): Promise<UserPhoto> => {
     const isAcceptableSize = await checkImageSize(photo);
 
     if (!isAcceptableSize) {
@@ -27,7 +33,7 @@ export const usePhotoGallery = () => {
 
     let base64Data: string;
 
-    if (isPlatform('hybrid')) {
+    if (isPlatform("hybrid")) {
       const file = await Filesystem.readFile({
         path: photo.path!,
       });
@@ -42,7 +48,7 @@ export const usePhotoGallery = () => {
       directory: Directory.Data,
     });
 
-    if (isPlatform('hybrid')) {
+    if (isPlatform("hybrid")) {
       return {
         filepath: savedFile.uri,
         webviewPath: Capacitor.convertFileSrc(savedFile.uri),
@@ -80,7 +86,7 @@ export const usePhotoGallery = () => {
   };
 
   const loadImage = async (photo: UserPhoto) => {
-    if (!isPlatform('hybrid')) {
+    if (!isPlatform("hybrid")) {
       const file = await Filesystem.readFile({
         path: photo.filepath,
         directory: Directory.Data,
@@ -92,17 +98,22 @@ export const usePhotoGallery = () => {
   };
 
   const takePhotoFromCamera = async () => {
-    const photoCamera = await Camera.getPhoto({
-      resultType: CameraResultType.Uri,
-      source: CameraSource.Camera,
-      quality: 100,
-      allowEditing: true
-    });
+    try {
+      setOpenError(false);
+      const photoCamera = await Camera.getPhoto({
+        resultType: CameraResultType.Uri,
+        source: CameraSource.Camera,
+        quality: 100
+      });
 
-    setError(false);
-    const fileName = user!.username + '-' + new Date().getTime() + '.jpeg';
-    const savedFileImage = await savePicture(photoCamera, fileName);
-    loadImage(savedFileImage);
+      setError(false);
+      const fileName = user!.username + "-" + new Date().getTime() + ".jpeg";
+      const savedFileImage = await savePicture(photoCamera, fileName);
+      loadImage(savedFileImage);
+    } catch (e) {
+      setOpenError(true);
+      history.push('/home')
+    }
   };
 
   return {
@@ -110,9 +121,11 @@ export const usePhotoGallery = () => {
     photo,
     setPhoto,
     error,
-    setError
+    setError,
+    openError,
+    setOpenError
   };
-}
+};
 
 export const base64FromPath = async (path: string): Promise<string> => {
   const response = await fetch(path);
@@ -121,12 +134,12 @@ export const base64FromPath = async (path: string): Promise<string> => {
     const reader = new FileReader();
     reader.onerror = reject;
     reader.onload = () => {
-      if (typeof reader.result === 'string') {
+      if (typeof reader.result === "string") {
         resolve(reader.result);
       } else {
-        reject('Method did not return a string');
+        reject("Method did not return a string");
       }
     };
     reader.readAsDataURL(blob);
   });
-}
+};

@@ -5,7 +5,6 @@ import { IonBackButton, IonButton, IonButtons, IonCardSubtitle, IonCardTitle, Io
 import { arrowBackOutline, bookmarksOutline, chevronDown, ellipsisVertical, gridOutline, menuOutline } from 'ionicons/icons';
 
 import { useAuth } from '../auth/AuthProvider';
-import { AppProvider } from '../context/AppContext';
 import { Post } from '../model/post';
 import { User } from '../model/user';
 import { RouteParams } from '../model/routeParams';
@@ -88,6 +87,7 @@ const Profile = () => {
     };
 
     const sortedPosts = posts.sort((a: any, b: any) => b.time - a.time);
+    const sortedSavedPosts = savedPosts.sort((a: any, b: any) => b.time - a.time);
 
     return (
         <IonPage>
@@ -100,7 +100,7 @@ const Profile = () => {
                                     <IonIcon icon={arrowBackOutline} />
                                 </IonButton>
                                 <p className={styles.username}>
-                                    {user?.username}
+                                    {profile?.username}
                                 </p>
                             </IonButtons>
                         </>
@@ -112,7 +112,7 @@ const Profile = () => {
                                     <IonIcon icon={arrowBackOutline} />
                                 </IonButton>
                                 <p className={styles.username}>
-                                    {user?.username}
+                                    {profile?.username}
                                 </p>
                             </IonButtons>
                         </>
@@ -144,7 +144,9 @@ const Profile = () => {
                     {clickedSegment === '' &&
                         <>
                             <IonButtons slot="start">
-                                <IonBackButton icon={arrowBackOutline} color="dark" />
+                                <IonButton color="dark" onClick={() => { history.push('/home') }}>
+                                    <IonIcon icon={arrowBackOutline} />
+                                </IonButton>
                                 <p className={styles.username} style={{ marginLeft: "1.5rem" }}>
                                     {profile && profile.username}
                                 </p>
@@ -168,12 +170,12 @@ const Profile = () => {
             }
             {clickedSegment === 'publicaciones' &&
                 <IonContent fullscreen>
-                    <Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
+                    <Feed posts={posts} clickedImage={clickedImage} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
                 </IonContent>
             }
             {clickedSegment === 'guardados' &&
                 <IonContent fullscreen>
-                    <Feed posts={savedPosts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
+                    <Feed posts={savedPosts} clickedImage={clickedImage} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
                 </IonContent>
             }
             {clickedSegment === '' &&
@@ -274,9 +276,9 @@ const Profile = () => {
                         <p className={styles.parrafoInfo}>Todavía no ha compartido ninguna publicación</p>
                     )}
                     {activeSegment === 'saved' && (
-                        (savedPosts.length > 0) ?
+                        (sortedSavedPosts.length > 0) ?
                         <IonRow className="ion-no-padding ion-no-margin">
-                            {savedPosts && savedPosts.map((post, index) => {
+                            {sortedSavedPosts && sortedSavedPosts.map((post, index) => {
                                 return (
                                     <IonCol className={styles.postCol} key={index} size="4">
                                         <img key={index} alt="post" src={post.image} onClick={() => { setClickedSegment('guardados'); setClickedImage(`post-${index}`) }} />

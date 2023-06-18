@@ -4,9 +4,8 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { useAuthState } from 'react-firebase-hooks/auth';
+import { useAuth } from './auth/AuthProvider';
 import Login from './pages/Login';
-import firebase from './firebase/firebase';
 import Register from './pages/Register';
 import Main from './Main';
 
@@ -32,7 +31,7 @@ import './theme/variables.css';
 setupIonicReact();
 
 const App: React.FC = () => {
-  const [user] = useAuthState(firebase.auth);
+  const { user } = useAuth();
   return (
     <IonApp>
       <IonReactRouter>

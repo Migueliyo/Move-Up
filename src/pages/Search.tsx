@@ -16,13 +16,11 @@ const Search: React.FC = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-  const [loadedUsers, setLoadedUsers] = useState(15);
 
   const getUsers = async () => {
     const response: FirebaseResponse = await firebase.getUsers();
     if (!response.error) {
-      setUsers(response.data.slice(0, loadedUsers));
-      setLoadedUsers(loadedUsers + 15);
+      setUsers(response.data);
     } else {
       console.log(response.error);
     }
@@ -63,16 +61,6 @@ const Search: React.FC = () => {
             );
           })}
         </IonList>
-        <IonInfiniteScroll
-          onIonInfinite={(ev) => {
-            setTimeout(async () => {
-              await getUsers();
-              ev.target.complete();
-            }, 2000);
-          }}
-        >
-          <IonInfiniteScrollContent></IonInfiniteScrollContent>
-        </IonInfiniteScroll>
       </IonContent>
     </IonPage >
   );

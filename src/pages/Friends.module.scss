@@ -15,13 +15,14 @@ $border: linear-gradient(to bottom, #e65aab, #f5ce22, #2d228b, #1d81bb);
 }
 
 .friendsContainer {
-
+    
     overflow-x: scroll;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     display: flex;
     flex-direction: row;
-    width: 100%;
+    width: auto;
+    padding-right: 0.8rem;
 }
 
 .friendsContainer::-webkit-scrollbar {

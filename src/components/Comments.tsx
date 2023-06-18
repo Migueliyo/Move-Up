@@ -51,7 +51,7 @@ const Comments = (props: { postId: string }) => {
     const sortedComments = comments.sort((a: any, b: any) => b.time - a.time);
 
     return (
-        <IonContent fullscreen class="comment-content">
+        <IonContent class="comment-content">
             <IonList>
                 <IonItem key={postId} className="ion-item first-ion-item">
                     <IonThumbnail className="thumbnail-comment" slot="start" onClick={() => { history.push("/profile/" + post?.user_id) }}>

@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router';
 
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
-import { addCircleOutline, arrowBackOutline, heartOutline, logOutOutline, paperPlaneOutline } from 'ionicons/icons';
+import { arrowBackOutline, logOutOutline } from 'ionicons/icons';
 
 import { FirebaseResponse } from '../model/response';
-import { AppProvider } from '../context/AppContext';
 
 import Feed from '../components/Feed';
 import firebase from '../firebase/firebase';
@@ -15,7 +13,7 @@ const Home = () => {
 
 	const [posts, setPosts] = useState([]);
 	const [clickedSegment, setClickedSegment] = useState('');
-	const location = useLocation();
+	const [refresh, setRefresh] = useState(false);
 
 	const getPosts = async () => {
 		const response: FirebaseResponse = await firebase.getPosts();
@@ -26,10 +24,10 @@ const Home = () => {
 		}
 	}
 
-	useIonViewWillEnter(
+	useEffect(
 		() => {
 			getPosts();
-		}, [location.key]
+		}, [refresh]
 	)
 
 	const handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
@@ -66,6 +64,17 @@ const Home = () => {
 						</IonButtons>
 					}
 
+					{clickedSegment === 'personas' &&
+						<IonButtons slot="start">
+							<IonButton color="dark" onClick={() => { setClickedSegment('informacion') }}>
+								<IonIcon icon={arrowBackOutline} />
+							</IonButton>
+							<p className='toolbar'>
+								Personas en común
+							</p>
+						</IonButtons>
+					}
+
 					{clickedSegment === '' &&
 						<>
 							<IonButtons slot="start">
@@ -73,21 +82,9 @@ const Home = () => {
 							</IonButtons>
 
 							<IonButtons slot="end">
-								<IonButton color="dark">
-									<IonIcon icon={addCircleOutline} />
-								</IonButton>
-								<IonButton color="dark">
-									<IonIcon icon={heartOutline} />
-								</IonButton>
-
-								<IonButton color="dark">
-									<IonIcon icon={paperPlaneOutline} />
-								</IonButton>
-
-								<IonButton onClick={firebase.logOut}>
+								<IonButton color="dark" onClick={firebase.logOut}>
 									<IonIcon icon={logOutOutline} />
 								</IonButton>
-
 							</IonButtons>
 						</>
 					}
@@ -98,7 +95,7 @@ const Home = () => {
 				<IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
 					<IonRefresherContent></IonRefresherContent>
 				</IonRefresher>
-				<Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
+				<Feed posts={posts} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} refresh={refresh} setRefresh={setRefresh} />
 			</IonContent>
 		</IonPage>
 	);

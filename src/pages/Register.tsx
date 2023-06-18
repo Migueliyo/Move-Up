@@ -14,6 +14,8 @@ const Register = ({ history }: Props) => {
     const refPassword = useRef<HTMLIonInputElement>();
 
     const [registerError, setRegisterError] = useState(false);
+    const [isEmptyError, setIsEmptyError] = useState(false);
+    const { setUser } = useAuth();
 
     const onRegister = async () => {
         const username = refUsername.current?.value as string;
@@ -21,7 +23,12 @@ const Register = ({ history }: Props) => {
         const surname = refSurname.current?.value as string;
         const email = refEmail.current?.value as string;
         const password = refPassword.current?.value as string;
-        const { setUser } = useAuth();
+
+        if (!username || !firstname || !surname || !email || !password) {
+            setIsEmptyError(true);
+            return;
+        }
+
         const response = await firebase.register(email, password, firstname, surname, username, setUser);
         if (!response.error) {
             history.push('/');
@@ -95,6 +102,14 @@ const Register = ({ history }: Props) => {
                             message="El email o nombre de usuario ya están siendo utilizados"
                             buttons={["OK"]}
                             onDidDismiss={() => setRegisterError(false)}
+                        ></IonAlert>
+                        <IonAlert
+                            isOpen={isEmptyError}
+                            header="Alerta"
+                            subHeader="Los campos están vacíos"
+                            message="Por favor, completa todos los campos para completar el registro."
+                            buttons={["OK"]}
+                            onDidDismiss={() => setIsEmptyError(false)}
                         ></IonAlert>
                         <IonButton expand="block" onClick={onRegister}>
                             Registrarse

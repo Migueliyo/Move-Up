@@ -1,11 +1,13 @@
 import { useEffect, useContext, useState, useRef } from "react";
+import { useHistory } from "react-router";
 
-import { IonAvatar, IonContent, IonIcon, IonItem, IonList, IonModal, IonRouterLink } from "@ionic/react";
+import { IonAvatar, IonContent, IonIcon, IonItem, IonList, IonModal, IonRouterLink, IonThumbnail } from "@ionic/react";
 import { addCircleOutline, bookmark, bookmarkOutline, chatbubbleOutline, createOutline, ellipsisVertical, eyeOffOutline, heart, heartOutline, newspaperOutline, paperPlaneOutline, trashOutline, warningOutline } from "ionicons/icons";
 
 import { useAuth } from "../auth/AuthProvider";
 import { AppContext } from "../context/AppContext";
 import { Post } from "../model/post";
+import { User } from "../model/user";
 
 import TimeDifference from "./TimeDifference";
 import firebase from "../firebase/firebase";
@@ -15,15 +17,18 @@ import Information from "./Information";
 import styles from "./Feed.module.scss";
 
 
+
 const Feed = (props: any) => {
 
-    const { posts, clickedSegment, setClickedSegment, clickedImage } = props;
+    const history = useHistory();
+    const { posts, clickedSegment, setClickedSegment, clickedImage, refresh, setRefresh } = props;
     const { user } = useAuth();
 
     const { likedContext, savedContext } = useContext(AppContext);
     const [liked, setLiked] = likedContext;
     const [saved, setSaved] = savedContext;
     const [postId, setPostId] = useState('');
+    const [commonFollowers, setCommonFollowers] = useState<User[]>([]);
     const refScrollStart = useRef<HTMLDivElement>(null);
     const refScrollEnd = useRef<HTMLDivElement>(null);
     const modals = useRef<Array<HTMLIonModalElement | null>>([]);
@@ -54,7 +59,7 @@ const Feed = (props: any) => {
             refScrollEnd.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         }
         dowloand();
-    }, [posts, clickedImage]);
+    }, [posts, clickedImage, refresh]);
 
     const likePost = async (event: any, postId: string, userId: string) => {
         if (event !== null)
@@ -146,10 +151,41 @@ const Feed = (props: any) => {
             }
 
             {clickedSegment === 'informacion' &&
-                <Information postId={postId} />
+                <Information postId={postId} setClickedSegment={setClickedSegment} commonFollowers={commonFollowers} setCommonFollowers={setCommonFollowers} />
             }
 
-            {clickedSegment === '' &&
+            {clickedSegment === 'personas' && (
+                <IonContent>
+                    <p className={styles.parrafoInfo}>Personas que tú sigues y que siguen a la persona que estás inspeccionando</p>
+                    <IonList>
+                        {commonFollowers.length === 1 ? (
+                            <IonItem key={commonFollowers[0].id} onClick={() => { history.push("/profile/" + commonFollowers[0].id) }}>
+                                <IonThumbnail slot="start">
+                                    <img className="searchImage" alt="Foto de perfil" src={commonFollowers[0].avatar} />
+                                </IonThumbnail>
+                                <div className="containerSearch">
+                                    <strong>{commonFollowers[0].username}</strong>
+                                    <p>{commonFollowers[0].firstname} {commonFollowers[0].surname}</p>
+                                </div>
+                            </IonItem>
+                        ) : (
+                            commonFollowers.map((user: User) => (
+                                <IonItem key={user.id} onClick={() => { history.push("/profile/" + user.id) }}>
+                                    <IonThumbnail slot="start">
+                                        <img className="searchImage" alt="Foto de perfil" src={user.avatar} />
+                                    </IonThumbnail>
+                                    <div className="containerSearch">
+                                        <strong>{user.username}</strong>
+                                        <p>{user.firstname} {user.surname}</p>
+                                    </div>
+                                </IonItem>
+                            ))
+                        )}
+                    </IonList>
+                </IonContent>
+            )}
+
+            {(clickedSegment === '' || clickedSegment === 'publicaciones' || clickedSegment === 'guardados') &&
                 <div className={styles.postsContainer}>
                     {sortedPosts.map((post: Post, index: number) => {
                         return (
@@ -196,7 +232,7 @@ const Feed = (props: any) => {
                                                     </IonItem>
                                                     {(user!.id! !== post.user_id) ?
                                                         (<>
-                                                            <IonItem onClick={() => { setClickedSegment('informacion'); setPostId(post.id!) }}>
+                                                            <IonItem onClick={() => { setClickedSegment('informacion'); setPostId(post.id!);}}>
                                                                 <IonIcon style={{ marginRight: 10 }} icon={newspaperOutline} ></IonIcon>
                                                                 Información sobre la cuenta
                                                             </IonItem>
@@ -211,7 +247,7 @@ const Feed = (props: any) => {
                                                                 <IonIcon style={{ marginRight: 10 }} icon={createOutline} ></IonIcon>
                                                                 Editar
                                                             </IonItem>
-                                                            <IonItem>
+                                                            <IonItem onClick={async ()=>{setRefresh(!refresh); await firebase.deletePost(user!.id!, post.id!); setRefresh(!refresh) }}>
                                                                 <IonIcon style={{ marginRight: 10, color: 'red' }} icon={trashOutline}></IonIcon>
                                                                 <span style={{ color: 'red' }}>Eliminar</span>
                                                             </IonItem>
@@ -240,7 +276,7 @@ const Feed = (props: any) => {
                                 </div>
 
                                 <div className={styles.postLikesContainer}>
-                                    <p>Le gusta a <span className={styles.postLikedName}>migueliyo1607</span> y <span className={styles.postLikedName}>{post.likes.length > 0 ? post.likes.length - 1 : post.likes.length} personas más</span></p>
+                                    <p><span className={styles.postLikedName}>{post.likes.length} Me gusta</span></p>
                                 </div>
 
                                 <div className={styles.postCaption}>
@@ -256,7 +292,7 @@ const Feed = (props: any) => {
                                 </div>
 
                                 <div className={styles.postAddComment} >
-                                    <div className={styles.postAddCommentProfile} ref={`post-${index + 1}` === clickedImage ? refScrollStart : null}>
+                                    <div className={styles.postAddCommentProfile} ref={(`post-${index + 1}` === clickedImage ) ? refScrollStart : null}>
                                         <IonAvatar>
                                             <img alt="add comment avatar" src={user?.avatar} />
                                         </IonAvatar>

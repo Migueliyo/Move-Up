@@ -4,7 +4,6 @@ import { IonButton, IonButtons, IonCol, IonContent, IonHeader, IonIcon, IonPage,
 import { arrowBackOutline } from 'ionicons/icons';
 
 import { useAuth } from '../auth/AuthProvider';
-import { AppProvider } from '../context/AppContext';
 import { FirebaseResponse } from '../model/response';
 import { User } from '../model/user';
 import { Post } from '../model/post';
@@ -27,14 +26,14 @@ const Friends = () => {
   const getFriends = async (id: string) => {
     const response: FirebaseResponse = await firebase.getFriendsFromIdUser(id);
     if (!response.error) {
-      setFriends(response.data);
+      setFriends([user, ...response.data]);
     } else {
       console.log(response.error);
     }
   }
 
-  const getPosts = async () => {
-    const response: FirebaseResponse = await firebase.getPosts();
+  const getPostsByFriends = async (id: string) => {
+    const response: FirebaseResponse = await firebase.getPostsByFriends(id);
     if (!response.error) {
       setPosts(response.data);
     } else {
@@ -65,7 +64,7 @@ const Friends = () => {
   useIonViewWillEnter(
     () => {
       getFriends(user!.id!);
-      getPosts();
+      getPostsByFriends(user!.id!);
       setTimeout(() => {
         setLoading(false);
       }, 2000);
@@ -102,16 +101,15 @@ const Friends = () => {
           <div className={styles.friendsContainer}>
             {friends.map((friend: User, index: number) => {
               return (
-                <IonCol key={index} className={`${index === 0 ? styles.friend : styles.friend} ${selectedColIndex === index ? styles.selected : ''}`}
+                <IonCol key={index} className={`${styles.friend} ${selectedColIndex === index ? styles.selected : ''}`}
                 onClick={() => {
                   if (selectedColIndex === index){
                     setSelectedColIndex(null);
-                    getPosts();
+                    getPostsByFriends(user!.id!);
                   } else if (index === 0) {
                     setSelectedColIndex(index);
                     getPostByFriend(user!.id!);
-                  }
-                  else {
+                  } else {
                     setSelectedColIndex(index);
                     getPostByFriend(friend.id!)
                   }

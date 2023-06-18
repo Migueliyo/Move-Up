@@ -63,7 +63,7 @@ const Main: React.FC = () => {
               <IonIcon icon={activeTab === 'friends' ? people : peopleOutline} />
             </IonTabButton>
             <IonTabButton tab="myprofile" href="/myprofile" onClick={() => handleTabChange('myprofile')}>
-              {user && <img style={activeTab === 'myprofile' ? {border: "2px solid black"} : {}}  alt="tab avatar" src={user.avatar} />}
+              {user && <img style={activeTab === 'myprofile' ? {border: "2px solid black", objectFit: "cover", width:"1.8rem"} : {objectFit: "cover", width:"1.8rem"} }  alt="tab avatar" src={user.avatar} />}
             </IonTabButton>
           </IonTabBar>
         </IonTabs>
