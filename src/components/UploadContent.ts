@@ -29,6 +29,7 @@ export const usePhotoGallery = () => {
 
     if (!isAcceptableSize) {
       setError(true);
+      history.push('/home')
     }
 
     let base64Data: string;

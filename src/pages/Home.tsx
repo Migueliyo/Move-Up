@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { IonButton, IonButtons, IonContent, IonHeader, IonIcon, IonPage, IonRefresher, IonRefresherContent, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
 import { arrowBackOutline, logOutOutline } from 'ionicons/icons';
 
+import { useAuth } from '../auth/AuthProvider';
 import { FirebaseResponse } from '../model/response';
 
 import Feed from '../components/Feed';
@@ -11,6 +12,7 @@ import firebase from '../firebase/firebase';
 
 const Home = () => {
 
+	const { setUser } = useAuth();
 	const [posts, setPosts] = useState([]);
 	const [clickedSegment, setClickedSegment] = useState('');
 	const [refresh, setRefresh] = useState(false);
@@ -82,7 +84,7 @@ const Home = () => {
 							</IonButtons>
 
 							<IonButtons slot="end">
-								<IonButton color="dark" onClick={firebase.logOut}>
+								<IonButton color="dark" onClick={()=>{firebase.logOut; setUser(null)}}>
 									<IonIcon icon={logOutOutline} />
 								</IonButton>
 							</IonButtons>

@@ -272,7 +272,7 @@ const MyProfile = () => {
                     <IonModal isOpen={showModal} initialBreakpoint={0.2} breakpoints={[0.2, 0]} onDidDismiss={() => setShowModal(false)}>
                         <IonList>
                             <IonItem onClick={() => { setClickedSegment('editar') }}>Editar perfil</IonItem>
-                            <IonItem onClick={firebase.logOut}>Cerrar sesión</IonItem>
+                            <IonItem onClick={()=>{firebase.logOut; setUser(null)}}>Cerrar sesión</IonItem>
                             <IonItem style={{ color: "red" }} onClick={() => setShowConfirmationAlert(true)}>Eliminar cuenta</IonItem>
                         </IonList>
                     </IonModal>

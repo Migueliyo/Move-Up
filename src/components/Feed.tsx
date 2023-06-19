@@ -17,7 +17,6 @@ import Information from "./Information";
 import styles from "./Feed.module.scss";
 
 
-
 const Feed = (props: any) => {
 
     const history = useHistory();
