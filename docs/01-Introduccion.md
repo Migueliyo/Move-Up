@@ -5,9 +5,10 @@
 | ---------------- | ------------------ | ---------------------- | ------------------ | ---------------- | ------------------- |
 |Miguel Angel      |Colmenero Palacios  |MoveUp                  |DAM                 |2023              |IES Virgen del Carmen|
 
-## Descripción del proyecto
-La idea principal de mi proyecto es desarrollar una aplicación híbrida con Ionic en la que se van a desarrollar las siguientes ideas:
+## Primeras ideas del proyecto
+En un principio, estás fueron las primeras ideas que tuve:
 
+* La idea principal de mi proyecto es desarrollar una aplicación híbrida con Ionic.
 * La aplicación tratará de ser una red social, con una interfaz parecida a la de TikTok, Instagram BeReal… , en la que puedas agregar amigos, tener tus publicaciones, interactuar con amigos (la idea es la realización de un chat pero como todavía no sé la dificultad que puede llegar a tener esta idea se puede eliminar en un futuro), etc. La diferencia de mi aplicación en cuanto a las demás es que ésta estará enfocada a la realización de ejercicio físico. 
 * Se presentarán desafíos dentro de la aplicación que se deben realizar compartiendo un video de que se han realizado (por ejemplo se presenta un desafío de hacer 50 flexiones en los próximos 10 minutos). Tus amigos o personas externas pueden decidir si el desafío ha sido superado o no.
 * Se obtendrán puntos dentro de la aplicación que serán acumulables y se podrán canjear por recompensas. Por ejemplo, si se tratara de una aplicación real y contara con el patrocinio de marcas como Myprotein, se podrían obtener recompensas como una camiseta o un suplemento al alcanzar un número de puntos dentro de la aplicación. 
@@ -16,6 +17,25 @@ La idea principal de mi proyecto es desarrollar una aplicación híbrida con Ion
 * Se puede tener un seguimiento del progreso dentro de la aplicación (objetivos, peso, marcas). Esto podría realizarse o no, pero en caso de hacerlo sería de forma muy general ya que la aplicación no está orientado a esto.
 * Se podrán realizar desafíos entre los usuarios de la aplicación en el que se notifique al otro usuario de que le han retado (puede haber recompensas de puntos por la victoria o derrota del desafío, aceptar o rechazar el desafío, un tiempo límite para realizarlo, etc). 
 * Al tratarse una red social, dispondrá de un login y de un menú inferior en el que se podrán acceder a todas las partes de la aplicación con un estilo parecido a aplicaciones como Youtube, Instagram, TikTok, etc. ya que he observado que actualmente todas las aplicaciones actuales cuentan con uno.
+
+## Descripción del proyecto
+Cómo más adelante se puede apreciar claramente en los diagramas de casos de uso, las ideas que al final han sido definitivas para el desarrollo de mi aplicación han sido muchas menos que las que tenía al principio. 
+
+Mi aplicación consta de una interfaz bastante parecida a Instagram en la que se pueden realizar las siguientes funcionalidades:
+* La aplicación consta de un login y un registro contra Firebase Authentication y un usuario que se setea en el contexto una vez hecho login.
+* Cuenta con un menú de tabs en el que se pueden acceder a todas las partes de la aplicación entre las que se encuentran:
+  * Home: Se visualizará todo el contenido que se suba en la aplicación
+  * Explore: Se podrán buscar por el nombre de usuario todos los usuarios registrados en la aplicación
+  * New: Se subirá contenido a través de la cámara o alguna imagen del dispositivo
+  * Friends: Se mostrarán solo los posts de las personas que sigues y se podrá filtrar por cada una de ellas
+  * Myprofile: Se podrá acceder al perfil del usuario logueado
+
+* Se puede visitar el perfil de cualquier usuario que esté utilizando la aplicación
+* Se puede comentar en el post de cualquier usuario
+* Se puede añadir un like o "dar me gusta" a cualquier post
+* Se pueden guardar los posts a los que posteriormente se tendrá acceso en el perfil de dicho usuario. También serán visibles para las demás personas que utilicen la aplicación.
+* Se puede acceder a tus seguidores y seguidos y a los de los demás usuarios en el correspondiente perfil de cada uno
+* Las publicaciones cuentan con un menú donde se puede acceder a una nueva ventana y obtener información sobre la cuenta, además de que si son del propio usuario, se pueden eliminar.
 
 ## Planificación
 

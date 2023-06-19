@@ -82,12 +82,6 @@ const Home = () => {
 							<IonButtons slot="start">
 								<img alt="main logo" src="/assets/logo.png" style={{ width: "7rem" }} />
 							</IonButtons>
-
-							<IonButtons slot="end">
-								<IonButton color="dark" onClick={()=>{firebase.logOut; setUser(null)}}>
-									<IonIcon icon={logOutOutline} />
-								</IonButton>
-							</IonButtons>
 						</>
 					}
 				</IonToolbar>

@@ -205,7 +205,7 @@ const Feed = (props: any) => {
 
                                     <div className={styles.postProfileMore}>
                                         <IonIcon id={`menu-${index}`} icon={ellipsisVertical} onClick={() => openModal(index)} />
-                                        <IonModal ref={(el) => (modals.current[index] = el)} initialBreakpoint={0.8} breakpoints={[0.8, 0]}>
+                                        <IonModal ref={(el) => (modals.current[index] = el)} initialBreakpoint={0.9} breakpoints={[0.9, 0]}>
                                             <IonContent>
                                                 <div className={styles.postContainer} >
                                                     <div className={styles.postProfile}>
@@ -230,27 +230,19 @@ const Feed = (props: any) => {
                                                         {saved[index] ? "Eliminar de guardados" : "Guardar"}
                                                     </IonItem>
                                                     {(user!.id! !== post.user_id) ?
-                                                        (<>
+                                                        (
                                                             <IonItem onClick={() => { setClickedSegment('informacion'); setPostId(post.id!);}}>
                                                                 <IonIcon style={{ marginRight: 10 }} icon={newspaperOutline} ></IonIcon>
                                                                 Información sobre la cuenta
                                                             </IonItem>
-                                                            <IonItem>
-                                                                <IonIcon style={{ marginRight: 10, color: 'red' }} icon={warningOutline}></IonIcon>
-                                                                <span style={{ color: 'red' }}>Denunciar</span>
-                                                            </IonItem>
-                                                        </>)
+                                                        )
                                                         :
-                                                        (<>
-                                                            <IonItem>
-                                                                <IonIcon style={{ marginRight: 10 }} icon={createOutline} ></IonIcon>
-                                                                Editar
-                                                            </IonItem>
-                                                            <IonItem onClick={async ()=>{setRefresh(!refresh); await firebase.deletePost(user!.id!, post.id!); setRefresh(!refresh) }}>
+                                                        (
+                                                            <IonItem onClick={()=>{firebase.deletePost(user!.id!, post.id!); setRefresh(!refresh);}}>
                                                                 <IonIcon style={{ marginRight: 10, color: 'red' }} icon={trashOutline}></IonIcon>
                                                                 <span style={{ color: 'red' }}>Eliminar</span>
                                                             </IonItem>
-                                                        </>)}
+                                                        )}
                                                 </IonList>
                                             </IonContent>
                                         </IonModal>
@@ -266,7 +258,6 @@ const Feed = (props: any) => {
                                     <div className={styles.postActions}>
                                         <IonIcon className="animate__animated" color={liked[index] ? "danger" : "dark"} icon={liked[index] ? heart : heartOutline} onClick={e => likePost(e, post.id!, user!.id!)} />
                                         <IonIcon onClick={() => { setClickedSegment('comentarios'); setPostId(post.id!) }} icon={chatbubbleOutline} />
-                                        <IonIcon icon={paperPlaneOutline} />
                                     </div>
 
                                     <div className={styles.postBookmark}>
@@ -299,7 +290,6 @@ const Feed = (props: any) => {
                                     </div>
 
                                     <div className={styles.postAddCommentActions}>
-                                        <IonIcon icon={heart} color="danger" />
                                         <IonIcon icon={addCircleOutline} color="medium" onClick={() => { setClickedSegment('comentarios'); setPostId(post.id!) }} />
                                     </div>
                                 </div>

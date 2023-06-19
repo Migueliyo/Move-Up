@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { IonAlert, IonButton, IonButtons, IonCard, IonCardContent, IonCardHeader, IonCardSubtitle, IonCardTitle, IonCol, IonContent, IonGrid, IonHeader, IonIcon, IonInput, IonItem, IonList, IonModal, IonPage, IonProgressBar, IonRefresher, IonRefresherContent, IonRow, IonSegment, IonSegmentButton, IonToolbar, RefresherEventDetail, useIonViewWillEnter } from '@ionic/react';
 import { arrowBackOutline, bookmarksOutline, chevronDown, gridOutline, menuOutline } from 'ionicons/icons';
@@ -28,7 +28,8 @@ const MyProfile = () => {
     const [showModal, setShowModal] = useState(false);
     const [showConfirmationAlert, setShowConfirmationAlert] = useState(false);
     const [emptyError, setEmptyError] = useState(false);
-    const { photo, takePhotoFromCamera, setPhoto } = usePhotoGallery();
+    const [refresh, setRefresh] = useState(false);
+    const { photoCamera, photo, takePhotoFromCamera, setPhoto } = usePhotoGallery();
     const refName = useRef<HTMLIonInputElement>();
     const refSurname = useRef<HTMLIonInputElement>();
     const refUsername = useRef<HTMLIonInputElement>();
@@ -56,7 +57,7 @@ const MyProfile = () => {
         }
     };
 
-    useIonViewWillEnter(() => {
+    useEffect(() => {
         if (user != null) {
             getUser(user!.id!);
             getPostFromIdUser(user.id!);
@@ -65,7 +66,7 @@ const MyProfile = () => {
                 setLoading(false);
             }, 2000);
         }
-    }, []);
+    }, [refresh]);
 
     const handleRefresh = (event: CustomEvent<RefresherEventDetail>) => {
         setTimeout(() => {
@@ -93,7 +94,7 @@ const MyProfile = () => {
             setEmptyError(true);
             return;
         }
-        const response = await firebase.editUser(photo!, user!.id!, nameInput, surnameInput, usernameInput, titleInput, linkInput, bioInput);
+        const response = await firebase.editUser(photoCamera!, user!.id!, nameInput, surnameInput, usernameInput, titleInput, linkInput, bioInput);
         if (!response.error){
           setClickedSegment('')
         }
@@ -193,12 +194,12 @@ const MyProfile = () => {
             }
             {clickedSegment === 'publicaciones' &&
                 <IonContent fullscreen>
-                    <Feed posts={posts} clickedImage={clickedImage} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
+                    <Feed posts={posts} clickedImage={clickedImage} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} refresh={refresh} setRefresh={setRefresh}/>
                 </IonContent>
             }
             {clickedSegment === 'guardados' &&
                 <IonContent fullscreen>
-                    <Feed posts={savedPosts} clickedImage={clickedImage} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} />
+                    <Feed posts={savedPosts} clickedImage={clickedImage} clickedSegment={clickedSegment} setClickedSegment={setClickedSegment} refresh={refresh} setRefresh={setRefresh} />
                 </IonContent>
             }
             {clickedSegment === 'editar' &&
@@ -311,7 +312,7 @@ const MyProfile = () => {
                                         <IonCardTitle className={styles.value}>
                                             {profile && profile.posts && profile.posts.length}
                                         </IonCardTitle>
-                                        <IonCardSubtitle className={styles.label}>Publicaciones</IonCardSubtitle>
+                                        <IonCardSubtitle className={styles.label}>Posts</IonCardSubtitle>
                                     </IonCol>
 
                                     <IonCol size="4" className="ion-text-center" onClick={() => { setClickedSegment('seguidores') }}>

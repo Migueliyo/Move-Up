@@ -195,7 +195,7 @@ const Profile = () => {
                                         <IonCardTitle className={styles.value}>
                                             {profile && profile.posts && profile.posts.length}
                                         </IonCardTitle>
-                                        <IonCardSubtitle className={styles.label}>Publicaciones</IonCardSubtitle>
+                                        <IonCardSubtitle className={styles.label}>Posts</IonCardSubtitle>
                                     </IonCol>
 
                                     <IonCol size="4" className="ion-text-center" onClick={() => { setClickedSegment('seguidores') }}>

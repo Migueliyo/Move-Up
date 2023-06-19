@@ -39,14 +39,14 @@ const Search: React.FC = () => {
     <IonPage>
       <IonHeader className="toolbar-background no-shadow">
         <IonSearchbar onIonChange={(e) => {
-          setSearch(e.target.value ? e.target.value : '')
+          setSearch(e.target.value ? e.target.value.toLowerCase() : '')
         }} showClearButton="always" placeholder='Buscar' className="searchbar-no-shadow"></IonSearchbar>
       </IonHeader>
       <IonContent fullscreen>
       {loading && <IonProgressBar type="indeterminate"></IonProgressBar>}
         <IonList>
           {users.sort().filter((user: User) => {
-            return user.username.includes(search)
+            return user.username.toLowerCase().includes(search)
           }).map((user: User) => {
             return (
               <IonItem key={user.id} onClick={() => { history.push("/profile/" + user.id) }}>

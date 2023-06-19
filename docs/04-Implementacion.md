@@ -2,7 +2,9 @@
 
 ## Script de introducción de los datos en Firestore
 
-Cualquier persona que haya trabajado con Cloud Firestore de manera gratuita, es decir, sin tener ningún plan de pago y sin obtener funciones especiales, sabrá a la perfección para la introducción de datos se debe hacer de uno en uno ya que no te permite importar un archivo json ni nada por el estilo. Para solucionar este problema, he realizado un script que me solucionara este problema. Dicho script se encuentra en la parte de helpers del proyecto.
+Cualquier persona que haya trabajado con Cloud Firestore de manera gratuita, es decir, sin tener ningún plan de pago y sin obtener funciones especiales, sabrá a la perfección para la introducción de datos se debe hacer de uno en uno ya que no te permite importar un archivo json ni nada por el estilo. Para solucionar este problema, he realizado un script que me solucionara este problema. Dicho script se encuentra en la parte de helpers del proyecto. 
+
+He utilizado todos estos datos ficticios para comprobar cómo se vería realmente mi aplicación en funcionamiento pero, para su presentación, todos estos datos ficticios serán borrados ya que relentizarían bastante la aplicación. 
 
 ### Explicación de los arrays de datos
 Lo primero que he tenido que hacer han sido los arrays con los datos de los campos que iban a tener cada usuario, entre ellos, nombre, apellido, descripción, etc. Este es el ejemplo de uno de ellos de apellidos españoles:
@@ -184,3 +186,45 @@ Para lanzar tu proyecto en modo producción en Firebase, deben de haber unas reg
 Al igual que en Cloud Firestore, para utilizar el Storage de Firebase pasa exactámente lo mismo. Para su uso se deben definir una serie de reglas. En el caso de mi aplicación, utilizo el Storage de Firebase para almacenar todo el contenido que se sube y alojarlo en una url que después consumo. Tal y como definí anteriormente que solo los usuarios logueados pudieran leer y escribir los datos, en este caso hice lo mismo.
 
 ![Captura de las reglas de Cloud Firestore](/docs/media/storage.png)
+
+## Generación proyectos nativos android e ios
+
+Para la generación de los proyectos nativos de android e ios, una de las formas que hay para hacerlo y la que yo personalmente he utilizado es capacitor.
+
+### Generación del proyecto android
+Se debe añadir la depencia al proyecto de @capacitor/android:
+```bash
+npm install @capacitor/android
+```
+
+Para generar la carpeta android con el proyecto:
+```bash
+npx cap add android
+```
+
+Para abrir un IDE, en este caso, Android Studio:
+```bash
+npx cap open android
+```
+
+Una vez hecho esto se habrá desplegado nuestro IDE con la aplicación generada que podremos correr en un emulador.
+
+### Generación del proyecto ios
+En el caso de la aplicación ios no he podido darle los últimos retoques como si que he hecho con la aplicación android ya que, para hacerlo, se necesita el editor de código Xcode y, en su defecto, un ordenador con sistema operativo de Apple.
+
+Se debe añadir la depencia al proyecto de @capacitor/ios:
+```bash
+npm install @capacitor/ios
+```
+
+Para generar la carpeta android con el proyecto:
+```bash
+npx cap add ios
+```
+
+Para abrir un IDE, en este caso, Android Studio:
+```bash
+npx cap open android
+```
+
+Una vez hecho esto se habrá desplegado nuestro IDE con la aplicación generada que podremos correr en un emulador.

@@ -9,6 +9,8 @@
 
 .image {
     border-radius: 500px;
+    width: 5rem;
+    height: 3.5rem;
 }
 
 .toolbar-down {

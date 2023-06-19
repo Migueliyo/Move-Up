@@ -141,9 +141,6 @@ const register = async (
     const usersCol = collection(db, USERS_COLLECTION);
     const docRef = await addDoc(usersCol, userToAdd);
 
-    // Actualiza el usuario en el contexto
-    setUser(userToAdd);
-
     return {
       data: docRef,
       error: false,
@@ -162,7 +159,7 @@ const logOut = async () => {
 };
 
 const editUser = async (
-  file: UserPhoto,
+  file: string,
   userId: string,
   firstname: string,
   surname: string,
@@ -203,8 +200,8 @@ const editUser = async (
         error: false,
       };
     } else {
-      const storageRef = ref(storage, file.filepath);
-      uploadString(storageRef, file.webviewPath!, "data_url").then(
+      const storageRef = ref(storage,`${new Date()}`+".jpeg");
+      uploadString(storageRef, file, "data_url").then(
         async (snapshot) => {
           // Obtén la URL de descarga del elemento subido
           const downloadUrl = await getDownloadURL(snapshot.ref);
@@ -485,7 +482,7 @@ const getUserFromPostId = async (postId: string): Promise<FirebaseResponse> => {
 };
 
 const addPost = async (
-  file: UserPhoto,
+  file: string,
   userId: string,
   titulo: string,
   username: string,
@@ -493,9 +490,9 @@ const addPost = async (
 ): Promise<FirebaseResponse> => {
   let post: Post;
   try {
-    const storageRef = ref(storage, file.filepath);
+    const storageRef = ref(storage, `${new Date().getTime()}` + ".jpeg");
     // 'file' comes from data URL string
-    uploadString(storageRef, file.webviewPath!, "data_url").then(
+    uploadString(storageRef, file, "data_url").then(
       async (snapshot) => {
         console.log("Foto subida con éxito a cloud storage");
 

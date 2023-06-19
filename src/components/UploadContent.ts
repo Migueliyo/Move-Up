@@ -11,7 +11,6 @@ import {
 import { Filesystem, Directory } from "@capacitor/filesystem";
 import { Capacitor } from "@capacitor/core";
 
-import { useAuth } from "../auth/AuthProvider";
 import { UserPhoto } from "../model/userPhoto";
 
 export const usePhotoGallery = () => {
@@ -19,7 +18,7 @@ export const usePhotoGallery = () => {
   const [photo, setPhoto] = useState<UserPhoto>();
   const [error, setError] = useState<boolean>(false);
   const [openError, setOpenError] = useState<boolean>(false);
-  const { user } = useAuth();
+  const [photoCamera, setPhotoCamera] = useState<string>();
 
   const savePicture = async (
     photo: Photo,
@@ -29,7 +28,7 @@ export const usePhotoGallery = () => {
 
     if (!isAcceptableSize) {
       setError(true);
-      history.push('/home')
+      history.push("/home");
     }
 
     let base64Data: string;
@@ -39,6 +38,7 @@ export const usePhotoGallery = () => {
         path: photo.path!,
       });
       base64Data = file.data;
+      setPhotoCamera(`data:image/jpeg;base64,${file.data}`);
     } else {
       base64Data = await base64FromPath(photo.webPath!);
     }
@@ -46,7 +46,7 @@ export const usePhotoGallery = () => {
     const savedFile = await Filesystem.writeFile({
       path: fileName,
       data: base64Data,
-      directory: Directory.Data,
+      directory: Directory.External,
     });
 
     if (isPlatform("hybrid")) {
@@ -99,22 +99,20 @@ export const usePhotoGallery = () => {
   };
 
   const takePhotoFromCamera = async () => {
-    try {
-      setOpenError(false);
-      const photoCamera = await Camera.getPhoto({
-        resultType: CameraResultType.Uri,
-        source: CameraSource.Camera,
-        quality: 100
-      });
+    setOpenError(false);
 
-      setError(false);
-      const fileName = user!.username + "-" + new Date().getTime() + ".jpeg";
-      const savedFileImage = await savePicture(photoCamera, fileName);
+    const photoCamera = await Camera.getPhoto({
+      resultType: CameraResultType.Uri,
+      source: CameraSource.Prompt,
+      quality: 100
+    });
+
+    setError(false);
+    const fileName = new Date().getTime() + ".jpeg";
+    const savedFileImage = await savePicture(photoCamera, fileName);
+    setTimeout(() => {
       loadImage(savedFileImage);
-    } catch (e) {
-      setOpenError(true);
-      history.push('/home')
-    }
+    }, 2000);
   };
 
   return {
@@ -124,7 +122,8 @@ export const usePhotoGallery = () => {
     error,
     setError,
     openError,
-    setOpenError
+    setOpenError,
+    photoCamera
   };
 };
 

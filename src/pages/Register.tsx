@@ -31,7 +31,7 @@ const Register = ({ history }: Props) => {
 
         const response = await firebase.register(email, password, firstname, surname, username, setUser);
         if (!response.error) {
-            history.push('/');
+            history.push('/login');
         } else {
             setRegisterError(true);
         }
@@ -99,7 +99,7 @@ const Register = ({ history }: Props) => {
                             isOpen={registerError}
                             header="Alerta"
                             subHeader="Fallo en el registro de sesión"
-                            message="El email o nombre de usuario ya están siendo utilizados"
+                            message="Email incorrecto / ya está siendo utilizado. La contraseña debe contener números"
                             buttons={["OK"]}
                             onDidDismiss={() => setRegisterError(false)}
                         ></IonAlert>
