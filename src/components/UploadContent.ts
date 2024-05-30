@@ -31,7 +31,7 @@ export const usePhotoGallery = () => {
       history.push("/home");
     }
 
-    let base64Data: string;
+    let base64Data: string | Blob;
 
     if (isPlatform("hybrid")) {
       const file = await Filesystem.readFile({
@@ -41,12 +41,13 @@ export const usePhotoGallery = () => {
       setPhotoCamera(`data:image/jpeg;base64,${file.data}`);
     } else {
       base64Data = await base64FromPath(photo.webPath!);
+      setPhotoCamera(base64Data)
     }
 
     const savedFile = await Filesystem.writeFile({
       path: fileName,
       data: base64Data,
-      directory: Directory.External,
+      directory: Directory.Data,
     });
 
     if (isPlatform("hybrid")) {
@@ -110,9 +111,7 @@ export const usePhotoGallery = () => {
     setError(false);
     const fileName = new Date().getTime() + ".jpeg";
     const savedFileImage = await savePicture(photoCamera, fileName);
-    setTimeout(() => {
-      loadImage(savedFileImage);
-    }, 2000);
+    loadImage(savedFileImage);
   };
 
   return {

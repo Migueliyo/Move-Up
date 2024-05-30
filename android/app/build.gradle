@@ -1,7 +1,8 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    namespace "com.iesvirgendelcarmen.moveup"
+    compileSdk rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "com.iesvirgendelcarmen.moveup"
         minSdkVersion rootProject.ext.minSdkVersion
