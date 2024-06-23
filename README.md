@@ -1,11 +1,17 @@
 # Move Up
 
+## Índice 📑
+- [Autor](#autor)
+- [Introducción](#introducción)
+- [Descripción](#descripción)
+- [Puesta en marcha del proyecto](#puesta-en-marcha-del-proyecto)
+
 ## Autor 👨‍💻
 **Miguel Angel Colmenero Palacios**  
 Junio 2023
 
 ## Introducción ✍️
-Move Up es un proyecto de desarrollo de una aplicación híbrida con Ionic, cuyo objetivo principal es crear una red social de publicaciones interactiva.
+Move Up es un proyecto de desarrollo de una aplicación híbrida desarrollada con Ionic, cuyo objetivo principal es crear una red social de publicaciones interactiva.
 
 ## Descripción 📝
 El desarrollo final de la aplicación incluye las siguientes funcionalidades:
@@ -18,7 +24,6 @@ El desarrollo final de la aplicación incluye las siguientes funcionalidades:
   - **MyProfile:** Acceso al perfil del usuario logueado.
 - **Interacciones:** Visitar perfiles, comentar posts, dar likes, guardar posts, acceder a seguidores y seguidos.
 - **Publicaciones:** Menú para obtener información sobre la cuenta y eliminar publicaciones propias.
-La planificación del proyecto se distribuyó en las siguientes semanas:
 
 ## Puesta en marcha del proyecto 🚀
 Para desplegar el proyecto de manera local en tu navegador
